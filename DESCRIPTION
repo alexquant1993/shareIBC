@@ -9,7 +9,18 @@ License: MIT + file LICENSE
 Imports: 
     config (>= 0.3.1),
     golem (>= 0.3.0),
-    shiny (>= 1.5.0)
+    shiny (>= 1.5.0),
+    processx,
+    attempt,
+    DT,
+    glue,
+    htmltools,
+    shinyMobile
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
+Suggests: 
+    testthat (>= 2.0.0),
+    spelling
+Config/testthat/edition: 2
+Language: en-US
