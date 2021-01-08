@@ -17,15 +17,26 @@
 ## Add one line by package you want to add as dependency
 # usethis::use_package( "thinkr" )
 usethis::use_package( "shinyMobile" )
+usethis::use_package( "shinyjs" )
+usethis::use_package( "mailR" )
+usethis::use_package( "googledrive" )
+usethis::use_package( "googlesheets4" )
+
 
 ## Add modules ----
 ## Create a module infrastructure in R/
-golem::add_module( name = "name_of_module1" ) # Name of the module
-golem::add_module( name = "name_of_module2" ) # Name of the module
+golem::add_module( name = "home" ) # Name of the module
+golem::add_module( name = "share" ) # Name of the module
+golem::add_module( name = "request" ) # Name of the module
+golem::add_module( name = "donate" ) # Name of the module
+golem::add_module( name = "food_program" ) # Name of the module
+
+
+
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*
-golem::add_fct( "helpers" ) 
+golem::add_fct( "subscribe" ) 
 golem::add_utils( "helpers" )
 
 ## External resources

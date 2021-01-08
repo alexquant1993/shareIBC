@@ -12,6 +12,7 @@ run_app <- function(
   enableBookmarking = NULL,
   ...
 ) {
+  source(app_sys("global.R"))
   with_golem_options(
     app = shinyApp(
       ui = app_ui,
