@@ -21,12 +21,16 @@ usethis::use_package( "shinyjs" )
 usethis::use_package( "mailR" )
 usethis::use_package( "googledrive" )
 usethis::use_package( "googlesheets4" )
+usethis::use_package( "stringr" )
 
 
 ## Add modules ----
 ## Create a module infrastructure in R/
 golem::add_module( name = "home" ) # Name of the module
 golem::add_module( name = "share" ) # Name of the module
+golem::add_module( name = "share_panel" ) # Name of the module
+golem::add_module( name = "share_post" ) # Name of the module
+golem::add_module( name = "share_subscribe" ) # Name of the module
 golem::add_module( name = "request" ) # Name of the module
 golem::add_module( name = "donate" ) # Name of the module
 golem::add_module( name = "food_program" ) # Name of the module
@@ -36,12 +40,13 @@ golem::add_module( name = "food_program" ) # Name of the module
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*
-golem::add_fct( "subscribe" ) 
+golem::add_fct( "subscribe" )
+golem::add_fct("post")
 golem::add_utils( "helpers" )
 
 ## External resources
 ## Creates .js and .css files at inst/app/www
-golem::add_js_file( "script" )
+golem::add_js_file( "custom" )
 golem::add_js_handler( "handlers" )
 golem::add_css_file( "custom" )
 

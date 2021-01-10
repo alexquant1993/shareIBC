@@ -29,10 +29,10 @@ app_ui <- function(request) {
           id =  "main_tabset",
           swipeable = TRUE,
           animated = FALSE,
-          mod_home_ui("home_ui_1"),
-          mod_share_ui("share_ui_1"),
-          mod_request_ui("request_ui_1"),
-          mod_donate_ui("donate_ui_1")
+          mod_home_ui("home_ui"),
+          mod_share_ui("share_ui"),
+          mod_request_ui("request_ui"),
+          mod_donate_ui("donate_ui")
         )
       )
     )
