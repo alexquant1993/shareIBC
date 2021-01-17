@@ -12,7 +12,7 @@ run_app <- function(
   enableBookmarking = NULL,
   ...
 ) {
-  source(app_sys("global.R"))
+  source(system.file("global.R", package = "socialministryapp"))
   with_golem_options(
     app = shinyApp(
       ui = app_ui,

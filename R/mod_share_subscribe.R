@@ -48,15 +48,8 @@ mod_share_subscribe_server <- function(id){
         tagList(
           "The objective of Share IBC is to help members of IBC and those within
           our community to get connected and share different opportunities.",
-          f7Row(
-            f7Col(
-              f7Text(inputId = ns("name_subs"), label = with_red_star("Enter your name"))
-            ),
-            f7Col(
-              f7Text(inputId = ns("email_subs"), label = with_red_star("Enter your email"))
-            ),
-            gap = FALSE
-          ),
+          f7Text(inputId = ns("name_subs"), label = with_red_star("Enter your name")),
+          f7Text(inputId = ns("email_subs"), label = with_red_star("Enter your email")),
           f7Button(
             inputId = ns("subscribeBtn"),
             label = "Subscribe",

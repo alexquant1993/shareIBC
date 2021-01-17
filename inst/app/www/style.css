@@ -1,0 +1,52 @@
+/*Panel tab*/
+.card-footer{
+  display: block;
+}
+
+.post-subject {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.post-date {
+  font-size: 13px;
+  color: #8e8e93;
+}
+
+/*Post tab*/
+.demo-list-icon,
+.icon-f7 {
+  background: #ccc;
+  display: block;
+  position: relative;
+}
+
+.ios .demo-list-icon {
+  width: 29px;
+  height: 29px;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.md .demo-list-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+
+.aurora .demo-list-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+/*fileInput shiny input container*/
+.shiny-input-container {
+  padding-left: calc(var(--f7-list-item-padding-horizontal) + var(--f7-safe-area-left));
+}
+
+.no-white-space{
+  white-space: unset !important;
+}
+
+
