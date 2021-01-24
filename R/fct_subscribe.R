@@ -1,23 +1,34 @@
 # SUBSCRIPTION FUNCTIONS----
 
 #' @description It builds a HTML subscription form
+#' @param mailing_lists string vector, mailing lists for subscription
 #' @noRd
-SubscriptionHTML <- function(){
+SubscriptionHTML <- function(mailing_lists){
+  mailing_lists <- 
+    plyr::mapvalues(mailing_lists,
+                    from = c("jobs", "services"),
+                    c("Job opportunities", "Offer your services"),
+                    warn_missing = FALSE)
   doc_subs <- tags$html(
     tags$head(
-      tags$title('IBC Job Offers Subscription Update')
+      tags$title('SHARE IBC Subscription Update')
     ),
     tags$body(
       tags$img(src = app_sys('app/www/IBC_logo_1.png'), alt = 'My Logo'),
-      h1('IBC Jobs Subscription Update'),
+      h1('Subscription Update'),
       p('Hey there,'),
       p('Hope you are having a great day. This is a confirmation that you just
-        successfully subscribed to the IBC Jobs Update mailing list.'),
-      tags$p("If this is a mistake (which we hope is not) or you didn't
+        successfully subscribed to the following mailing list(s):'),
+      tags$ul(
+        lapply(seq_along(mailing_lists), function(i){
+          tags$li(mailing_lists[i])
+        })
+      ),
+      p("If this is a mistake (which we hope is not) or you didn't
              subscribe to the list, please visit ",
-             tags$a(href = "http://178.62.110.168:3838/?unsubscribe=TRUE",
-                    "IBC Jobs Update "),
-             "to update the subscription."),
+        a(href = "http://178.62.110.168:3838/?unsubscribe=TRUE",
+          "IBC Jobs Update "),
+        "to update your subscription preferences."),
       p("Thanks"),
       p("Benevolence Ministry Team,"),
       p("Immanuel Baptist Church")
@@ -38,30 +49,50 @@ is_valid_email <- function(x) {
 #' @description  Adds a new entry to the googlesheets where the subscription list is located
 #' @param name string, subscriber's name
 #' @param email string, subscriber's email
+#' @param mailing_lists string vector, mailing lists for subscription
 #' @importFrom googledrive drive_get
-#' @importFrom googlesheets4 read_sheet sheet_append
+#' @importFrom googlesheets4 read_sheet sheet_append range_write
 #' @importFrom mailR send.mail
 #' @noRd
-add_email <- function(name, email){
+add_email <- function(name, email, mailing_lists){
   # Reading ibc mailing list
-  wb <- drive_get("JOBS_IBC_MAILING_LIST")
-  dt <- read_sheet(wb, sheet = "Subscribers")
+  wb <- drive_get("mailing_list/DT_MAILING_LIST")
+  dt <- read_sheet(wb)
   ## check that email format is okay
   if(is_valid_email(email)){
+    # operation successful
     email <- paste0("<", email, ">")
+    time_stamp <- as.character(Sys.time())
     ## check if email is already in data
     if (email %in% dt$EMAIL) {
-      success <- FALSE
-      Ops.error <- "Email already exists in the list."
-      # operation not successful: email already exists
-    } else{
-      # operation successful
+      # Update preferences for an existing entry
       success <- TRUE
       Ops.error <- NULL
+      index <- which(dt$EMAIL == email)
+      dt_index <- dt[index, ]
+      dt_index$ACTIVE_JOBS <- "jobs" %in% mailing_lists
+      dt_index$ACTIVE_SERVICES <- "services" %in% mailing_lists
+      dt_index$LAST_ACTIVITY <- time_stamp
+      # Update entry
+      row <- index + 1
+      start_range <- paste0(LETTERS[1], row)
+      end_range <- paste0(LETTERS[ncol(dt)], row)
+      range_update <- paste0(start_range, ":", end_range)
+      range_write(wb$id, data = dt_index, range = range_update, col_names = FALSE)
+    } else{
+      # New entry
+      success <- TRUE
+      Ops.error <- NULL
+      id_member <- paste0("ID_", stringr::str_pad(nrow(dt) + 1, width = 6, pad = "0"))
       new_entry <-
-        data.frame(ID_MEMBER = tail(dt$ID_MEMBER, 1) + 1, NAME = name,
-                   EMAIL = email, DATE = as.character(Sys.time()))
-      SubscriptionHTML()
+        data.frame(ID_MEMBER = id_member,
+                   NAME = name,
+                   EMAIL = email,
+                   ACTIVE_JOBS = "jobs" %in% mailing_lists,
+                   ACTIVE_SERVICES = "services" %in% mailing_lists,
+                   FIRST_ACTIVITY = time_stamp,
+                   LAST_ACTIVITY = time_stamp)
+      SubscriptionHTML(mailing_lists)
       send.mail(from = "jobs@ibcmadrid.com",
                 to = c(paste(name, email)),
                 replyTo = c("jobs@ibcmadrid.com"),
@@ -75,12 +106,12 @@ add_email <- function(name, email){
                 authenticate = TRUE,
                 send = TRUE)
       # Refresh data mailing list
-      sheet_append(ss = wb, data = new_entry, sheet = "Subscribers")
+      sheet_append(ss = wb, data = new_entry)
     }
   } else {
-    ## operation not successful: notify that email not valid, try another email
+    ## operation not successful: notify that email is not valid, try another email
     success <- FALSE
-    Ops.error <- c("Email not valid, please try again.")
+    Ops.error <- c("Not valid Email, please try again.")
   }
   return(
     list(success = success,
@@ -90,23 +121,33 @@ add_email <- function(name, email){
 
 # UNSUBSCRIPTION FUNCTIONS----
 #' @description It builds a HTML unsubscription form
+#' @param mailing_lists string vector, mailing lists for unsubscription
 #' @noRd
-UnsubscriptionHTML <- function(){
+UnsubscriptionHTML <- function(mailing_lists){
+  mailing_lists <- 
+    plyr::mapvalues(mailing_lists,
+                    from = c("jobs", "services"),
+                    c("Job opportunities", "Offer your services"),
+                    warn_missing = FALSE)
   doc_unsubs <- tags$html(
     tags$head(
-      tags$title('IBC Job Offers Subscription Update')
+      tags$title('SHARE IBC Subscription Update')
     ),
     tags$body(
       tags$img(src = app_sys('app/www/IBC_logo_1.png'), alt = 'My Logo'),
-      h1('IBC Jobs Subscription Update'),
+      h1('Subscription Update'),
       p('Hey there,'),
       p('Hope you are having a great day. This is a confirmation that you just
-        successfully unsubscribed from the IBC Jobs Update mailing list.'),
-      tags$p("If you would like to subscribe again, ",
-             "please visit ",
-             tags$a(href = "http://178.62.110.168:3838/",
-                    "IBC Jobs Update "),
-             "to update the subscription."),
+        successfully unsubscribed from the following mailing list(s):'),
+      tags$ul(
+        lapply(seq_along(mailing_lists), function(i){
+          tags$li(mailing_lists[i])
+        })
+      ),
+      p("If you would like to subscribe again, ",
+        "please visit ",
+        a(href = "http://178.62.110.168:3838/", "IBC Jobs Update "),
+        "to update the subscription."),
       p("Thanks"),
       p("Benevolence Ministry Team,"),
       p("Immanuel Baptist Church")
@@ -121,21 +162,22 @@ UnsubscriptionHTML <- function(){
 #' @description  Adds a new entry to the googlesheets where the subscription list is located
 #' @param name string, subscriber's name
 #' @param email string, subscriber's email
+#' @param mailing_lists string vector, mailing lists for unsubscription
 #' @importFrom googledrive drive_get
-#' @importFrom googlesheets4 read_sheet sheet_write
+#' @importFrom googlesheets4 read_sheet range_write
 #' @importFrom mailR send.mail
 #' @noRd
-remove_email <- function(email){
+remove_email <- function(email, mailing_lists){
   # Reading ibc mailing list
-  wb <- drive_get("JOBS_IBC_MAILING_LIST")
-  dt <- read_sheet(wb, sheet = "Subscribers")
+  wb <- drive_get("mailing_list/DT_MAILING_LIST")
+  dt <- read_sheet(wb)
   email <- paste0("<", email, ">")
   if(email %in% dt$EMAIL){
     success <- TRUE
     Ops.error <- NULL
     index <- which(dt$EMAIL == email)
     # Send unsubscription email
-    UnsubscriptionHTML()
+    UnsubscriptionHTML(mailing_lists)
     send.mail(from = "jobs@ibcmadrid.com",
               to = c(paste(dt$NAME[index], email)),
               replyTo = c("jobs@ibcmadrid.com"),
@@ -148,9 +190,21 @@ remove_email <- function(email){
                           passwd = "fAC3pGdUnd1", ssl = TRUE),
               authenticate = TRUE,
               send = TRUE)
-    # update email_list
-    dt <- dt[-index, ]
-    sheet_write(ss = wb, data = dt, sheet = "Subscribers")
+    # Update preferences
+    dt_index <- dt[index, ]
+    if ("jobs" %in% mailing_lists) {
+      dt_index$ACTIVE_JOBS <- FALSE
+    }
+    if ("services" %in% mailing_lists) {
+      dt_index$ACTIVE_SERVICES <- FALSE
+    }
+    dt_index$LAST_ACTIVITY <- as.character(Sys.time())
+    # Update entry
+    row <- index + 1
+    start_range <- paste0(LETTERS[1], row)
+    end_range <- paste0(LETTERS[ncol(dt)], row)
+    range_update <- paste0(start_range, ":", end_range)
+    range_write(wb$id, data = dt_index, range = range_update, col_names = FALSE)
   } else{
     # operation not successful, email not found in list.
     success <- FALSE

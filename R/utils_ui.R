@@ -18,9 +18,9 @@ replaceTruthy <- function(x, replace = "\u2014") {
 #' @noRd
 helpPopup <- function(content) {
   shiny::a(href = "#",
-    class = "tooltip-init",
-    `data-tooltip` = content,
-    shiny::icon("question-circle")
+           class = "tooltip-init",
+           `data-tooltip` = content,
+           shiny::icon("question-circle")
   )
 }
 
@@ -182,6 +182,56 @@ formCheckBox <- function (inputId, label, value = FALSE) {
   )
 }
 
+
+#' Form CheckBoxGroup element
+#' @param inputId Checkbox group input.
+#' @param label Checkbox group label.
+#' @param choices Checkbox group choices.
+#' @param selected Checkbox group selected value.
+
+#' @noRd
+formCheckBoxGroup <- function (inputId, label, choices = NULL, selected = NULL) {
+  selectedPositions <- if (!is.null(selected)) {
+    match(selected, choices)
+  } else {NULL}
+  choicesTag <-
+    lapply(X = seq_along(choices), function(i) {
+      shiny::tags$li(
+        shiny::tags$label(
+          class = "item-checkbox item-content", 
+          shiny::tags$input(
+            type = "checkbox",
+            name = inputId, 
+            value = choices[[i]]
+          ),
+          shiny::tags$i(class = "icon icon-checkbox"), 
+          shiny::tags$div(
+            class = "item-inner",
+            shiny::tags$div(
+              class = "item-title", 
+              names(choices)[i]
+            )
+          )
+        )
+      )
+    })
+  if (!is.null(selected)) {
+    for (i in seq_along(selectedPositions)) {
+      choicesTag[[selectedPositions[i]]]$children[[1]]$children[[1]]$attribs$checked <- "checked"
+    }
+  }
+  shiny::tagList(
+    shiny::tags$div(
+      class = "item-title",
+      label
+    ), 
+    shiny::tags$div(
+      class = "list shiny-input-checkboxgroup", 
+      id = inputId,
+      shiny::tags$ul(choicesTag)
+    )
+  )
+}
 
 
 

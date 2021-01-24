@@ -16,7 +16,8 @@ mod_share_post_ui <- function(id){
       strong(f7BlockHeader("Post a job opportunity or offer your services")),
       "God delights in His benevolent nature. He is kind, gracious, generous,
       patient, and loving. He is unrelenting in his care for us, and we are
-      called to do the same with others. Thank you for sharing!"
+      called to do the same with others. Thank you for sharing!",
+      tags$p("*Mandatory fields", style = "color:red;")
     ),
     formList(
       formText(
@@ -31,7 +32,7 @@ mod_share_post_ui <- function(id){
       ),
       formSelect(
         ns("type_post"),
-        label = with_red_star("Type of post"),
+        label = with_red_star("Select type of post"),
         choices = c("Job opportunity" = "jobs",
                     "Offer your services" = "services")
       ),
@@ -94,18 +95,6 @@ mod_share_post_ui <- function(id){
         rounded = TRUE
       )
     )
-    # f7Block(
-    #   strong = TRUE,
-    #   # iframe Post HTML form (GoogleForms + FormFacade + PerformFlow)
-    #   # Googleforms: fill out form online
-    #   # FormFacade: add-on to customize and embed googleforms within your website
-    #   # PerformFlow: add-on to allow an approval process
-    #   # HTML("<iframe src='https://formfacade.com/headless/111562879866341271998/home/form/1FAIpQLSe1yBR-Cd-Agiyw1BVUaIRmptCxNo0BCE4usi6jOsOLWb9Jhw' scrolling='no' frameBorder='0' width='100%' style='height:400px; /*change height as required*/ overflow-y:hidden;'></iframe>")
-    #   # HTML("<iframe src='https://formfacade.com/headless/111562879866341271998/home/form/1FAIpQLSe1yBR-Cd-Agiyw1BVUaIRmptCxNo0BCE4usi6jOsOLWb9Jhw' scrolling='no' frameBorder='0' width='100%' style='height:400px; /*change height as required*/ overflow-y:hidden;'></iframe>")
-    #   # HTML("<iframe src='https://formfacade.com/headless/111562879866341271998/home/form/1FAIpQLSe1yBR-Cd-Agiyw1BVUaIRmptCxNo0BCE4usi6jOsOLWb9Jhw' scrolling='no' frameBorder='0' width='100%' style='height:400px; /*change height as required*/ overflow-y:hidden;'></iframe>")
-    #   # HTML("<iframe src='https://docs.google.com/forms/d/e/1FAIpQLSe1yBR-Cd-Agiyw1BVUaIRmptCxNo0BCE4usi6jOsOLWb9Jhw/viewform?embedded=true' frameBorder='0' width='100%' style='height:400px; /*change height as required*/ overflow-y:hidden;'></iframe>")
-    #   # HTML("<iframe src='https://docs.google.com/forms/d/e/1FAIpQLSe1yBR-Cd-Agiyw1BVUaIRmptCxNo0BCE4usi6jOsOLWb9Jhw/viewform?embedded=true' frameBorder='0' width='100%' style='height:400px; /*change height as required*/ overflow-y:hidden;'>Loading…</iframe>")
-    # )
   )
 }
 
@@ -119,14 +108,18 @@ mod_share_post_server <- function(id){
     observeEvent(input$rgpd_link_post, {
       f7TogglePopup(id = "popup_rgpd_post")
     })
-    # Only enable the upload buttons when their corresponding input has a file selected
-    # observe({
-    #   fields_filled_post <-
-    #     post_names %>%
-    #     sapply(function(x) !is.null(input[[x]]) && input[[x]] != "") %>%
-    #     all
-    #   shinyjs::toggleState("loadFileBtn", fields_filled_post)
-    # })
+    
+    # Enable buttons when all mandatory fields are filled out
+    observe({
+      shinyjs::toggleState(
+        id = "submit_post",
+        isTruthy(input$name_poster) & isTruthy(input$name_subs) &
+          isTruthy(input$subject) & isTruthy(input$description) &
+          shiny::isTruthy(input$check_rgpd_post)
+      )
+    })
+    
+    # 
     
   })
 }

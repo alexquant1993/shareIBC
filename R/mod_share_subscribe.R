@@ -15,9 +15,6 @@ mod_share_subscribe_ui <- function(id){
     f7Card(
       title = strong(textOutput(ns("title_subscriptionUI"))),
       uiOutput(ns("subscriptionUI")),
-      shinyjs::hidden(
-        span(id = ns("subscribeMsg"), "Submitting...", style = "margin-left: 15px;")
-      ),
       br(),
       f7Toggle(
         inputId = ns("unsubscribe"),
@@ -48,8 +45,26 @@ mod_share_subscribe_server <- function(id){
         tagList(
           "The objective of Share IBC is to help members of IBC and those within
           our community to get connected and share different opportunities.",
-          f7Text(inputId = ns("name_subs"), label = with_red_star("Enter your name")),
-          f7Text(inputId = ns("email_subs"), label = with_red_star("Enter your email")),
+          tags$p("*Mandatory fields", style = "color:red;"),
+          f7Text(
+            inputId = ns("name_subs"),
+            label = with_red_star("Name"),
+            placeholder = "Your name"
+          ),
+          f7Text(
+            inputId = ns("email_subs"),
+            label = with_red_star("E-mail"),
+            placeholder = "Your e-mail"
+          ),
+          br(),
+          formCheckBoxGroup(
+            inputId = ns("ml_subs"),
+            label = "Choose the mailing list(s) you want to subscribe:",
+            choices = c("Job opportunities" = "jobs",
+                        "Offer your services" = "services"),
+            selected = c("jobs", "services")
+          ),
+          br(),
           f7Button(
             inputId = ns("subscribeBtn"),
             label = "Subscribe",
@@ -60,7 +75,20 @@ mod_share_subscribe_server <- function(id){
       } else {
         tagList(
           "Thank you so much for being part of our community. We hope to see you soon!",
-          f7Text(inputId = ns("email_unsubs"), label = with_red_star("Enter your email")),
+          tags$p("*Mandatory fields", style = "color:red;"),
+          f7Text(
+            inputId = ns("email_unsubs"),
+            label = with_red_star("E-mail"),
+            placeholder = "Your e-mail"
+          ),
+          br(),
+          formCheckBoxGroup(
+            inputId = ns("ml_unsubs"),
+            label = "Choose the mailing list(s) you want to unsubscribe:",
+            choices = c("Job opportunities" = "jobs",
+                        "Offer your services" = "services")
+          ),
+          br(),
           f7Button(
             inputId = ns("unsubscribeBtn"),
             label = "Unsubscribe",
@@ -75,22 +103,22 @@ mod_share_subscribe_server <- function(id){
     observeEvent(input$subscribeBtn, {
       # User-experience stuff
       shinyjs::disable("subscribeBtn")
-      shinyjs::show("subscribeMsg")
+      f7ShowPreloader(color = "blue")
       shinyjs::hide("error")
       on.exit({
         shinyjs::enable("subscribeBtn")
-        shinyjs::hide("subscribeMsg")
+        f7HidePreloader()
       })
       
       # Send email (show an error message in case of error)
       tryCatch({
-        out <- add_email(input$name_subs, input$email_subs)
+        out <- add_email(input$name_subs, input$email_subs, input$ml_subs)
         if (out$success) {
           # Succsessful operation
           f7Dialog(
             session = session,
             title = "Done",
-            text = "You are now subscribed to the IBC mailing list.",
+            text = "You have successfully updated your preferences!",
             type = "alert"
           )
         } else {
@@ -117,21 +145,21 @@ mod_share_subscribe_server <- function(id){
     observeEvent(input$unsubscribeBtn, {
       # User-experience stuff
       shinyjs::disable("unsubscribeBtn")
-      shinyjs::show("subscribeMsg")
+      f7ShowPreloader(color = "blue")
       shinyjs::hide("error_un")
       on.exit({
         shinyjs::enable("unsubscribeBtn")
-        shinyjs::hide("subscribeMsg")
+        f7HidePreloader()
       })
       
       # Send email (show an error message in case of error)
       tryCatch({
-        out <- remove_email(input$email_unsubs)
+        out <- remove_email(input$email_unsubs, input$ml_unsubs)
         if (out$success) {
           f7Dialog(
             session = session,
             title = "Done",
-            text = "You are now unsubscribed to the IBC mailing list.",
+            text = "You have successfully updated your preferences!",
             type = "alert"
           )
         } else {
@@ -153,9 +181,12 @@ mod_share_subscribe_server <- function(id){
     
     # Enable buttons when all mandatory fields are filled out----
     observe({
-      shinyjs::toggleState(id = "subscribeBtn",
-                           isTruthy(input$name_subs) & isTruthy(input$email_subs))
-      shinyjs::toggleState(id = "unsubscribeBtn", isTruthy(input$email_unsubs))
+      shinyjs::toggleState(
+        id = "subscribeBtn",
+        isTruthy(input$name_subs) & isTruthy(input$email_subs) & isTruthy(input$ml_subs))
+      shinyjs::toggleState(
+        id = "unsubscribeBtn",
+        isTruthy(input$email_unsubs) & isTruthy(input$ml_unsubs))
     })
   })
 }
