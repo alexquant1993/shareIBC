@@ -134,7 +134,7 @@ mod_share_subscribe_server <- function(id){
         updateF7Text("email_subs", value = "")
       },
       error = function(err) {
-        shinyjs::html("errorMsg", err$message)
+        shinyjs::html("error", err$message)
         shinyjs::show(id = "error", anim = TRUE, animType = "fade")      
         shinyjs::logjs(err)
       })
@@ -173,7 +173,7 @@ mod_share_subscribe_server <- function(id){
         updateF7Text("email_unsubs", value = "")
       },
       error = function(err) {
-        shinyjs::html("errorMsg", err$message)
+        shinyjs::html("error_un", err$message)
         shinyjs::show(id = "error_un", anim = TRUE, animType = "fade")      
         shinyjs::logjs(err)
       })

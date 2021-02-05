@@ -1,0 +1,130 @@
+body {
+  font-size: 16px;
+}
+
+.container {
+  width: 100%;
+  text-align: center
+}
+
+.wrapper {
+  width: 70%;
+  text-align: center;
+  padding: 10px 50px;
+  margin: 0 auto 20px;
+}
+
+.message {
+  text-align: left;
+  padding-left: 10px;
+  margin-bottom: 0;
+}
+
+.respondent {
+  font-weight: bold;
+}
+
+.responses-table {
+  width: 100%;
+}
+
+.responses-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.response-row {
+  border-top: 1px solid #dddddd;
+}
+
+.responses-table td {
+  text-align: left;
+  padding: 15px 10px;
+}
+
+.result-table {
+  width: 100%;
+}
+
+.result-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 auto;
+}
+
+.result-header {
+  border-bottom: 2px solid #8c8c8c;
+}
+
+.result-row {
+  border-top: 1px solid #dddddd;
+}
+
+.result-table td {
+  text-align: left;
+  padding: 15px 10px 5px;
+}
+
+.overallStatus {
+  text-transform: capitalize;
+}
+
+.recipientStatusEmail {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  -ms-word-break: break-all;
+  word-break: break-all;
+}
+
+.button-group {
+  margin-top: 25px;
+  text-align: center;
+}
+
+.button {
+  display: block;
+  width: 40%;
+  margin: 0 auto;
+  padding: 10px 10px;
+  color: #ccc;
+  text-decoration: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+}
+
+.approveButton {
+  color: white;
+  background-color: #88be00;
+  border: 2px solid #88be00;
+}
+
+.rejectButton {
+  color: white;
+  background-color: #d53e26;
+  border: 2px solid #d53e26;
+}
+
+.buttonWrapper {
+  margin-bottom: 10px;
+}
+
+.timestamp {
+  display: none;
+}
+
+@media only screen and (max-width: 480px) {
+  .wrapper {
+    padding: 0 !important;
+    width: 100% !important;
+  }
+  
+  table {
+    width: 100% !important;
+  }
+  
+  .button {
+    padding: 10px 5px;
+    width: 85% !important;
+  }
+}

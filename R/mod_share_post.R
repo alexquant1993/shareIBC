@@ -26,7 +26,7 @@ mod_share_post_ui <- function(id){
         placeholder = "Your name"
       ),
       formText(
-        inputId = ns("name_subs"),
+        inputId = ns("email_poster"),
         label = with_red_star("E-mail"),
         placeholder = "Your e-mail"
       ),
@@ -47,7 +47,7 @@ mod_share_post_ui <- function(id){
         placeholder = "Offer a brief description of your post. Include all relevant details."
       ),
       formText(
-        inputId = ns("contact_mail"),
+        inputId = ns("contact_email"),
         label = "Contact information - email",
         placeholder = "Email to contact about the post"
       ),
@@ -58,7 +58,7 @@ mod_share_post_ui <- function(id){
       ),
       br(),
       f7File(
-        inputId = ns("upload_post"),
+        inputId = ns("attach_post"),
         label = 
           div(strong("Attach files, if any"),
               helpPopup('Only image files are allowed: .jpg and .png')
@@ -113,13 +113,60 @@ mod_share_post_server <- function(id){
     observe({
       shinyjs::toggleState(
         id = "submit_post",
-        isTruthy(input$name_poster) & isTruthy(input$name_subs) &
+        isTruthy(input$name_poster) & isTruthy(input$email_poster) &
           isTruthy(input$subject) & isTruthy(input$description) &
           shiny::isTruthy(input$check_rgpd_post)
       )
     })
     
-    # 
+    # Upload post data into googledrive and send pre-approval email
+    observeEvent(input$submit_post, {
+      # User loading experience
+      shinyjs::disable("submit_post")
+      f7ShowPreloader(color = "blue")
+      shinyjs::hide("error_post")
+      on.exit({
+        shinyjs::enable("submit_post")
+        f7HidePreloader()
+      })
+      
+      # Upload data and send pre-approval email
+      tryCatch({
+        browser()
+        out <- 
+          UploadPost(input$name_poster,
+                     input$email_poster,
+                     input$type_post,
+                     input$subject,
+                     input$description,
+                     input$contact_email,
+                     input$contact_phone,
+                     input$attach_post,
+                     input$check_rgpd_post)
+        if (out$success) {
+          # Succsessful operation
+          f7Dialog(
+            session = session,
+            title = "Done",
+            text = "Your post has been sent for approval!",
+            type = "alert"
+          )
+        } else {
+          # Unsuccsesful operation
+          f7Dialog(
+            session = session,
+            title = "Error",
+            text = out$Ops.error,
+            type = "alert"
+          )
+        }
+      }, error = function(err){
+        shinyjs::html("error_post", err$message)
+        shinyjs::show(id = "error_post", anim = TRUE, animType = "fade")      
+        shinyjs::logjs(err)
+      })
+      
+    })
     
   })
 }

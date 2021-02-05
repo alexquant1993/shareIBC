@@ -14,7 +14,7 @@ SubscriptionHTML <- function(mailing_lists){
       tags$title('SHARE IBC Subscription Update')
     ),
     tags$body(
-      tags$img(src = app_sys('app/www/IBC_logo_1.png'), alt = 'My Logo'),
+      tags$img(src = app_sys('app/messages/IBC_logo_1.png'), alt = 'My Logo'),
       h1('Subscription Update'),
       p('Hey there,'),
       p('Hope you are having a great day. This is a confirmation that you just
@@ -34,7 +34,7 @@ SubscriptionHTML <- function(mailing_lists){
       p("Immanuel Baptist Church")
     )
   )
-  fileConn <- file(app_sys("app/www/page_subs.html"))
+  fileConn <- file(app_sys("app/messages/page_subs.html"))
   writeLines(as.character(doc_subs), fileConn)
   close(fileConn)
 }
@@ -63,11 +63,11 @@ add_email <- function(name, email, mailing_lists){
     # operation successful
     email <- paste0("<", email, ">")
     time_stamp <- as.character(Sys.time())
+    success <- TRUE
+    Ops.error <- NULL
     ## check if email is already in data
     if (email %in% dt$EMAIL) {
       # Update preferences for an existing entry
-      success <- TRUE
-      Ops.error <- NULL
       index <- which(dt$EMAIL == email)
       dt_index <- dt[index, ]
       dt_index$ACTIVE_JOBS <- "jobs" %in% mailing_lists
@@ -81,8 +81,6 @@ add_email <- function(name, email, mailing_lists){
       range_write(wb$id, data = dt_index, range = range_update, col_names = FALSE)
     } else{
       # New entry
-      success <- TRUE
-      Ops.error <- NULL
       id_member <- paste0("ID_", stringr::str_pad(nrow(dt) + 1, width = 6, pad = "0"))
       new_entry <-
         data.frame(ID_MEMBER = id_member,
@@ -97,7 +95,7 @@ add_email <- function(name, email, mailing_lists){
                 to = c(paste(name, email)),
                 replyTo = c("jobs@ibcmadrid.com"),
                 subject = "Subscription confirmation",
-                body = app_sys("app/www/page_subs.html"),
+                body = app_sys("app/messages/page_subs.html"),
                 html = TRUE,
                 inline = T,
                 smtp = list(host.name = "smtp.yandex.com", port =  465,
@@ -134,7 +132,7 @@ UnsubscriptionHTML <- function(mailing_lists){
       tags$title('SHARE IBC Subscription Update')
     ),
     tags$body(
-      tags$img(src = app_sys('app/www/IBC_logo_1.png'), alt = 'My Logo'),
+      tags$img(src = app_sys('app/messages/IBC_logo_1.png'), alt = 'My Logo'),
       h1('Subscription Update'),
       p('Hey there,'),
       p('Hope you are having a great day. This is a confirmation that you just
@@ -153,7 +151,7 @@ UnsubscriptionHTML <- function(mailing_lists){
       p("Immanuel Baptist Church")
     )
   )
-  fileConn <- file(app_sys("app/www/page_unsubs.html"))
+  fileConn <- file(app_sys("app/messages/page_unsubs.html"))
   writeLines(as.character(doc_unsubs), fileConn)
   close(fileConn)
 }
@@ -182,7 +180,7 @@ remove_email <- function(email, mailing_lists){
               to = c(paste(dt$NAME[index], email)),
               replyTo = c("jobs@ibcmadrid.com"),
               subject = "Unsubscription confirmation",
-              body = app_sys("app/www/page_unsubs.html"),
+              body = app_sys("app/messages/page_unsubs.html"),
               html = TRUE,
               inline = T,
               smtp = list(host.name = "smtp.yandex.com", port =  465,
