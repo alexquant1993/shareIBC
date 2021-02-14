@@ -132,7 +132,6 @@ mod_share_post_server <- function(id){
       
       # Upload data and send pre-approval email
       tryCatch({
-        browser()
         out <- 
           UploadPost(input$name_poster,
                      input$email_poster,
@@ -148,7 +147,7 @@ mod_share_post_server <- function(id){
           f7Dialog(
             session = session,
             title = "Done",
-            text = "Your post has been sent for approval!",
+            text = "Thank you for your contribution! A confirmation email will be sent to you once your post is approved.",
             type = "alert"
           )
         } else {

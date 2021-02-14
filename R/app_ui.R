@@ -32,7 +32,25 @@ app_ui <- function(request) {
           mod_home_ui("home_ui"),
           mod_share_ui("share_ui"),
           mod_request_ui("request_ui"),
-          mod_donate_ui("donate_ui")
+          mod_donate_ui("donate_ui"),
+          f7Tab(
+            tabName = "Approve",
+            hidden = TRUE,
+            f7BlockTitle(title = "Approval Request", size = "large") %>% f7Align(side = "center"),
+            h4(textOutput("approve_title")) %>% f7Align(side = "center"),
+            f7TextArea(
+              inputId = "comment_approve",
+              label = "Your comment",
+              placeholder = "Your comment here",
+              resize = TRUE
+            ),
+            f7Segment(
+              rounded = TRUE,
+              container = "segment",
+              f7Button(label = "Approve", inputId = "request_approve"),
+              f7Button(outline = TRUE, fill = FALSE, label = "Reject", inputId = "request_reject")
+            )
+          )
         )
       )
     )

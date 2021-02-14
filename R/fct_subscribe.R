@@ -14,8 +14,7 @@ SubscriptionHTML <- function(mailing_lists){
       tags$title('SHARE IBC Subscription Update')
     ),
     tags$body(
-      tags$img(src = app_sys('app/messages/IBC_logo_1.png'), alt = 'My Logo'),
-      h1('Subscription Update'),
+      h2('Subscription Update'),
       p('Hey there,'),
       p('Hope you are having a great day. This is a confirmation that you just
         successfully subscribed to the following mailing list(s):'),
@@ -25,13 +24,14 @@ SubscriptionHTML <- function(mailing_lists){
         })
       ),
       p("If this is a mistake (which we hope is not) or you didn't
-             subscribe to the list, please visit ",
+        subscribe to the list, please visit ",
         a(href = "http://178.62.110.168:3838/?unsubscribe=TRUE",
-          "IBC Jobs Update "),
+          "SHARE IBC "),
         "to update your subscription preferences."),
       p("Thanks"),
+      hr(),
       p("Benevolence Ministry Team,"),
-      p("Immanuel Baptist Church")
+      tags$img(src = app_sys('app/messages/IBC_logo_1.png'), alt = 'My Logo', width = '200', height = '50')
     )
   )
   fileConn <- file(app_sys("app/messages/page_subs.html"))
@@ -91,7 +91,7 @@ add_email <- function(name, email, mailing_lists){
                    FIRST_ACTIVITY = time_stamp,
                    LAST_ACTIVITY = time_stamp)
       SubscriptionHTML(mailing_lists)
-      send.mail(from = "jobs@ibcmadrid.com",
+      send.mail(from = "Social Ministry IBC <jobs@ibcmadrid.com>",
                 to = c(paste(name, email)),
                 replyTo = c("jobs@ibcmadrid.com"),
                 subject = "Subscription confirmation",
@@ -144,11 +144,12 @@ UnsubscriptionHTML <- function(mailing_lists){
       ),
       p("If you would like to subscribe again, ",
         "please visit ",
-        a(href = "http://178.62.110.168:3838/", "IBC Jobs Update "),
+        a(href = "http://178.62.110.168:3838/", "SHARE IBC "),
         "to update the subscription."),
       p("Thanks"),
+      hr(),
       p("Benevolence Ministry Team,"),
-      p("Immanuel Baptist Church")
+      tags$img(src = app_sys('app/messages/IBC_logo_1.png'), alt = 'My Logo', width = '200', height = '50')
     )
   )
   fileConn <- file(app_sys("app/messages/page_unsubs.html"))
@@ -176,7 +177,7 @@ remove_email <- function(email, mailing_lists){
     index <- which(dt$EMAIL == email)
     # Send unsubscription email
     UnsubscriptionHTML(mailing_lists)
-    send.mail(from = "jobs@ibcmadrid.com",
+    send.mail(from = "Social Ministry IBC <jobs@ibcmadrid.com>",
               to = c(paste(dt$NAME[index], email)),
               replyTo = c("jobs@ibcmadrid.com"),
               subject = "Unsubscription confirmation",

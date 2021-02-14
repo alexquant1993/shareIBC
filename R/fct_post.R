@@ -8,9 +8,8 @@
 #' @param contact_phone string, phone number to contact about the post
 #' @param files_tmp dataframe that contains the names, sizes, MIME types and datapaths of the uploaded files
 #' @param gdpr_acceptance boolean, whether the poster has accepted or not the
-#' @importFrom googledrive drive_get drive_mkdir drive_ls
+#' @importFrom googledrive drive_get drive_mkdir drive_ls drive_upload
 #' @importFrom googlesheets4 read_sheet sheet_append
-#' general data protection regulation.
 UploadPost <- function(name_poster,
                        email_poster,
                        type_post = c("jobs", "services"),
@@ -84,7 +83,7 @@ UploadPost <- function(name_poster,
     send.mail(from = "Social Ministry IBC <jobs@ibcmadrid.com>",
               to = dt_approvers$EMAIL,
               subject = "A New Request Requires Your Approval!",
-              body = app_sys("app/messages/page_approval.html"),
+              body = app_sys("app/messages/request_post.html"),
               html = TRUE,
               inline = T,
               smtp = list(host.name = "smtp.yandex.com", port =  465,
@@ -104,7 +103,7 @@ UploadPost <- function(name_poster,
   )
 }
 
-#' Create HTML report to approve post
+#' Create HTML report to be sent to the post approvers
 #' @param id_post string, name of the poster
 #' @param name_poster string, name of the poster
 #' @param email_poster string, email of the poster
@@ -131,19 +130,22 @@ PostApprovalHTML <- function(id_post,
   html_post <-
     tags$html(
       lang = "en",
-      htmltools::includeCSS(app_sys("app/messages/post_approval.css")),
       tags$body(
+        style = "font-size: 16px;",
         tags$div(
-          class = "container",
+          style = "width: 100%; text-align: center;",
           tags$div(
-            class = "wrapper",
             style = "width:70%;text-align:center;border:1px solid #dddddd;border-radius:5px;padding:10px 50px;margin:0 auto 20px",
             tags$p(style = "font-size: 18px", paste("Request #", id_post, "|", format(Sys.Date(), "%A, %d %B %Y"))),
             tags$h2("Post a job opportunity or offer your services"),
-            tags$p(class = "message", "A new request requires your approval!"),
+            tags$p(
+              style = "text-align: left; padding-left: 10px; margin-bottom: 0;",
+              "A new request requires your approval!"
+            ),
             tags$div(
-              class = "responses-table",
+              style = "width: 100%;",
               tags$table(
+                style = "width: 100%;border-collapse: collapse; margin: 0 auto;",
                 tags$colgroup(
                   tags$col(
                     span = "1",
@@ -157,9 +159,11 @@ PostApprovalHTML <- function(id_post,
                 tags$tbody(
                   tags$tr(
                     tags$td(
-                      tags$span(class = "respondent", "Respondent email")
+                      style = "text-align: left; padding: 15px 10px;",
+                      tags$span(style = "font-weight: bold;", "Respondent email")
                     ),
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px;",
                       tags$a(
                         href = paste0("mailto:", email_poster),
                         email_poster
@@ -167,56 +171,68 @@ PostApprovalHTML <- function(id_post,
                     )
                   ),
                   tags$tr(
-                    class = "response-row",
+                    style = "border-top: 1px solid #dddddd;",
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px; font-weight: bold;",
                       "Respondent name"
                     ),
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px;",
                       name_poster
                     )
                   ),
                   tags$tr(
-                    class = "response-row",
+                    style = "border-top: 1px solid #dddddd;",
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px; font-weight: bold;",
                       "Type of post"
                     ),
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px;",
                       type_post
                     )
                   ),
                   tags$tr(
-                    class = "response-row",
+                    style = "border-top: 1px solid #dddddd;",
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px; font-weight: bold;",
                       "Subject of the post"
                     ),
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px;",
                       subject
                     )
                   ),
                   tags$tr(
-                    class = "response-row",
+                    style = "border-top: 1px solid #dddddd;",
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px; font-weight: bold;",
                       "Description of the post"
                     ),
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px;",
                       description
                     )
                   ),
                   tags$tr(
-                    class = "response-row",
+                    style = "border-top: 1px solid #dddddd;",
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px; font-weight: bold;",
                       "Contact information - email"
                     ),
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px;",
                       contact_email
                     )
                   ),
                   tags$tr(
-                    class = "response-row",
+                    style = "border-top: 1px solid #dddddd;",
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px; font-weight: bold;",
                       "Contact information - phone number"
                     ),
                     tags$td(
+                      style = "text-align: left; padding: 15px 10px;",
                       contact_phone
                     )
                   )
@@ -225,31 +241,34 @@ PostApprovalHTML <- function(id_post,
             )
           ),
           tags$div(
-            class = "button-group",
+            style = "margin-top: 25px; text-align: center;",
             tags$div(
-              class = "buttonWrapper",
-              tags$a(
-                class = "button approveButton",
-                target = "_blank",
-                href = "http://178.62.110.168:3838/?unsubscribe=TRUE",
-                "Approve"
-              )
-            ),
-            tags$div(
-              class = "buttonWrapper",
               style = "margin-bottom: 10px;",
               tags$a(
-                class = "button rejectButton",
+                style = "display: block;
+                        width: 40%;
+                        margin: 0 auto;
+                        padding: 10px 10px;
+                        color: #ccc;
+                        text-decoration: none;
+                        font-family: Arial, Helvetica, sans-serif;
+                        font-size: 16px;
+                        color: white;
+                        background-color: #88be00;
+                        border: 2px solid #88be00;",
                 target = "_blank",
                 href = "http://178.62.110.168:3838/?unsubscribe=TRUE",
-                "Reject"
+                "Approve/Reject"
               )
             )
-          )
+          ),
+          hr(),
+          p(strong("Benevolence Ministry Team")),
+          tags$img(src = app_sys('app/messages/IBC_logo_1.png'), alt = 'My Logo', width = '200', height = '50')
         )
       )
     )
-  fileConn <- file(app_sys("app/messages/page_approval.html"))
+  fileConn <- file(app_sys("app/messages/request_post.html"))
   writeLines(as.character(html_post), fileConn)
   close(fileConn)
 }

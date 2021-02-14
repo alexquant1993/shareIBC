@@ -19,3 +19,7 @@ humanFriendlyNames <- function(colnames) {
   paste0(toupper(substring(colnames, 1, 1)),
          substring(gsub("\\.|_", " ", colnames), 2))
 }
+
+dropNulls <- function (x){
+  x[!vapply(x, is.null, FUN.VALUE = logical(1))]
+}
