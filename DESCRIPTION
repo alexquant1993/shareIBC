@@ -1,10 +1,11 @@
-Package: socialministryapp
-Title: Social Ministry IBC App
+Package: shareIBC
+Title: Share IBC
 Version: 0.0.0.9000
 Authors@R: person('Anderson', 'Arroyo', email = 'a.arroyo@pucp.pe', role = c('cre', 'aut'))
-Description: It allows to share and exchange job opportunities and
-  services. It allows as well to request assistance, donate and apply for the
-  food program.
+Description:Application of the Social Ministry at IBC Madrid created to
+  allow members of the community to share job opportunities, offer their
+  professional services, recycle and give away free items, request assistance
+  and donate to the ministry.
 License: MIT + file LICENSE
 Imports: 
     config (>= 0.3.1),
@@ -24,7 +25,7 @@ Imports:
     plyr
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 Suggests: 
     testthat (>= 2.0.0),
     spelling

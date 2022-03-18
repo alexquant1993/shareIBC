@@ -19,11 +19,12 @@
 ## to change the name in the app_sys() function in app_config.R /!\
 ## 
 golem::fill_desc(
-  pkg_name = "socialministryapp", # The Name of the package containing the App 
-  pkg_title = "Social Ministry IBC App", # The Title of the package containing the App 
-  pkg_description = "It allows to share and exchange job opportunities and
-  services. It allows as well to request assistance, donate and apply for the
-  food program.", # The Description of the package containing the App 
+  pkg_name = "shareIBC", # The Name of the package containing the App 
+  pkg_title = "Share IBC", # The Title of the package containing the App 
+  pkg_description = "Application of the Social Ministry at IBC Madrid created to
+  allow members of the community to share job opportunities, offer their
+  professional services, recycle and give away free items, request assistance
+  and donate to the ministry.", # The Description of the package containing the App 
   author_first_name = "Anderson", # Your First Name
   author_last_name = "Arroyo", # Your Last Name
   author_email = "a.arroyo@pucp.pe", # Your Email

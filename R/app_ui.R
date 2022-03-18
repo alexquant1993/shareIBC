@@ -12,11 +12,11 @@ app_ui <- function(request) {
     # Your application UI logic 
     f7Page(
       title = "Social Ministry IBC",
-      init = f7Init(
-        skin = "auto",
-        theme = "light",
+      options = list(
+        theme = "auto",
+        dark = FALSE,
         filled = TRUE,
-        color = "pink"
+        color = "#ff2d55"
       ),
       f7TabLayout(
         navbar = f7Navbar(
