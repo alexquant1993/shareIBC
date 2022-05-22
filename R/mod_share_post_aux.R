@@ -7,7 +7,7 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-mod_share_post_ui <- function(id){
+mod_share_post_ui2 <- function(id){
   ns <- NS(id)
   f7Tab(
     tabName = "Post",
@@ -101,7 +101,7 @@ mod_share_post_ui <- function(id){
 #' share_post Server Functions
 #'
 #' @noRd 
-mod_share_post_server <- function(id){
+mod_share_post_server2 <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     # Toggle data protection pop up
@@ -127,7 +127,7 @@ mod_share_post_server <- function(id){
       shinyjs::hide("error_post")
       on.exit({
         shinyjs::enable("submit_post")
-        f7HidePreloader()
+        hideF7Preloader()
       })
       
       # Upload data and send pre-approval email

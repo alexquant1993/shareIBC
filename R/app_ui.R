@@ -11,46 +11,41 @@ app_ui <- function(request) {
     golem_add_external_resources(),
     # Your application UI logic 
     f7Page(
-      title = "Social Ministry IBC",
+      title = "Share IBC",
+      allowPWA = TRUE,
       options = list(
         theme = "auto",
         dark = FALSE,
         filled = TRUE,
-        color = "#ff2d55"
+        pullToRefresh = TRUE
+      ),
+      # Waiting background before the UI is ready to be shown
+      waiter::waiter_preloader(
+        html = waiter::spin_1(),
+        color = "#D14D42",
+        image = "www/IBC_logo_intro2.png",
+        fadeout = TRUE
       ),
       f7TabLayout(
         navbar = f7Navbar(
-          title = "Social Ministry IBC",
+          title = "Social Ministry IBC Madrid",
           hairline = TRUE,
           shadow = TRUE,
-          transparent = FALSE
+          transparent = FALSE,
+          subNavbar = f7SubNavbar(
+            f7Searchbar(id = "search_post", inline = TRUE),
+            mod_post_ui("post_ui")
+          )
         ),
         f7Tabs(
           id =  "main_tabset",
           swipeable = TRUE,
           animated = FALSE,
-          mod_home_ui("home_ui"),
           mod_share_ui("share_ui"),
           mod_request_ui("request_ui"),
-          mod_donate_ui("donate_ui"),
-          f7Tab(
-            tabName = "Approve",
-            hidden = TRUE,
-            f7BlockTitle(title = "Approval Request", size = "large") %>% f7Align(side = "center"),
-            h4(textOutput("approve_title")) %>% f7Align(side = "center"),
-            f7TextArea(
-              inputId = "comment_approve",
-              label = "Your comment",
-              placeholder = "Your comment here",
-              resize = TRUE
-            ),
-            f7Segment(
-              rounded = TRUE,
-              container = "segment",
-              f7Button(label = "Approve", inputId = "request_approve"),
-              f7Button(outline = TRUE, fill = FALSE, label = "Reject", inputId = "request_reject")
-            )
-          )
+          mod_about_ui("about_ui"),
+          mod_info_ui("info_ui"),
+          mod_approval_ui("approval_ui")
         )
       )
     )
@@ -70,15 +65,16 @@ golem_add_external_resources <- function(){
   add_resource_path(
     'www', app_sys('app/www')
   )
- 
+  
   tags$head(
     favicon(),
     bundle_resources(
       path = app_sys('app/www'),
-      app_title = 'socialministryapp'
+      app_title = 'shareIBC'
     ),
     # Add here other external resources
-    shinyjs::useShinyjs()
+    shinyjs::useShinyjs(),
+    waiter::use_waiter()
     # for example, you can add shinyalert::useShinyalert() 
   )
 }

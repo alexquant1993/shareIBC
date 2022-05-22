@@ -1,4 +1,19 @@
-/*Panel tab*/
+/*Preloader css*/
+.waiter-overlay {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/*App custom color theme*/
+:root {
+  --f7-theme-color: #8a705a;
+  --f7-theme-color-rgb: 138, 112, 90;
+  --f7-theme-color-shade: #715c4a;
+  --f7-theme-color-tint: #a0846d;
+}
+
+/*Post cards UI*/
 .card-footer{
   display: block;
 }
@@ -13,7 +28,7 @@
   color: #8e8e93;
 }
 
-/*Post tab*/
+/*Submit a post tab*/
 .demo-list-icon,
 .icon-f7 {
   background: #ccc;

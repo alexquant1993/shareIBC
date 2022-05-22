@@ -2,7 +2,7 @@ Package: shareIBC
 Title: Share IBC
 Version: 0.0.0.9000
 Authors@R: person('Anderson', 'Arroyo', email = 'a.arroyo@pucp.pe', role = c('cre', 'aut'))
-Description:Application of the Social Ministry at IBC Madrid created to
+Description: Application of the Social Ministry at IBC Madrid created to
   allow members of the community to share job opportunities, offer their
   professional services, recycle and give away free items, request assistance
   and donate to the ministry.
@@ -19,10 +19,11 @@ Imports:
     shinyMobile,
     shinyjs,
     googledrive,
-    mailR,
     googlesheets4,
     stringr,
-    plyr
+    plyr,
+    waiter,
+    gmailr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2

@@ -1,4 +1,4 @@
-#' home UI Function
+#' info UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -8,28 +8,27 @@
 #'
 #' @importFrom shiny NS tagList
 #' @importFrom shinyMobile f7Tab f7Icon
-mod_home_ui <- function(id){
+mod_info_ui <- function(id){
   ns <- NS(id)
   f7Tab(
-    tabName = "Home",
-    icon = f7Icon("house_fill"),
-    active = TRUE,
-    "Home tab"
+    tabName = "Info",
+    icon = f7Icon("info_circle_fill"),
+    "Info tab"
   )
 }
-
-#' home Server Functions
+    
+#' info Server Functions
 #'
 #' @noRd 
-mod_home_server <- function(id){
+mod_info_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    
+ 
   })
 }
-
+    
 ## To be copied in the UI
-# mod_home_ui("home_ui_1")
-
+# mod_info_ui("info_ui")
+    
 ## To be copied in the server
-# mod_home_server("home_ui_1")
+# mod_info_server("info_ui")

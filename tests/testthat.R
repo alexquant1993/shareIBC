@@ -1,4 +1,4 @@
 library(testthat)
-library(socialministryapp)
+library(shareIBC)
 
-test_check("socialministryapp")
+test_check("shareIBC")

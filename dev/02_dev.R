@@ -18,23 +18,25 @@
 # usethis::use_package( "thinkr" )
 usethis::use_package( "shinyMobile" )
 usethis::use_package( "shinyjs" )
-usethis::use_package( "mailR" )
+usethis::use_package( "gmailr" )
 usethis::use_package( "googledrive" )
 usethis::use_package( "googlesheets4" )
 usethis::use_package( "stringr" )
+usethis::use_package( "waiter" )
+
 
 
 ## Add modules ----
 ## Create a module infrastructure in R/
-golem::add_module( name = "home" ) # Name of the module
-golem::add_module( name = "share" ) # Name of the module
+golem::add_module( name = "share", fct = "aux") # Name of the module
+golem::add_module( name = "share_tabs") # Name of the module
+golem::add_module( name = "post", fct = "aux") # Name of the module
+golem::add_module( name = "post_tabs") # Name of the module
 golem::add_module( name = "share_panel" ) # Name of the module
-golem::add_module( name = "share_post" ) # Name of the module
-golem::add_module( name = "share_subscribe" ) # Name of the module
 golem::add_module( name = "request" ) # Name of the module
-golem::add_module( name = "donate" ) # Name of the module
-golem::add_module( name = "food_program" ) # Name of the module
-
+golem::add_module( name = "about" ) # Name of the module
+golem::add_module( name = "info" ) # Name of the module
+golem::add_module( name = "approval", fct = "workflow") # Name of the module
 
 
 
@@ -61,7 +63,7 @@ usethis::use_test( "app" )
 # Documentation
 
 ## Vignette ----
-usethis::use_vignette("socialministryapp")
+usethis::use_vignette("shareIBC")
 devtools::build_vignettes()
 
 ## Code Coverage----

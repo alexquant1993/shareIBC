@@ -1,4 +1,4 @@
-#' donate UI Function
+#' about UI Function
 #'
 #' @description A shiny Module.
 #'
@@ -7,27 +7,27 @@
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-mod_donate_ui <- function(id){
+mod_about_ui <- function(id){
   ns <- NS(id)
   f7Tab(
-    tabName = "Donate",
-    icon = f7Icon("heart_fill"),
-    "Donate tab"
+    tabName = "About us",
+    icon = f7Icon("person_3_fill"),
+    "About us tab"
   )
 }
-
-#' donate Server Functions
+    
+#' about Server Functions
 #'
 #' @noRd 
-mod_donate_server <- function(id){
+mod_about_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    
+ 
   })
 }
-
+    
 ## To be copied in the UI
-# mod_donate_ui("donate_ui_1")
-
+# mod_about_ui("about_ui")
+    
 ## To be copied in the server
-# mod_donate_server("donate_ui_1")
+# mod_about_server("about_ui")

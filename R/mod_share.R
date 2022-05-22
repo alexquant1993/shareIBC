@@ -12,15 +12,16 @@ mod_share_ui <- function(id){
   ns <- NS(id)
   f7Tab(
     tabName = "Share",
-    icon = f7Icon("person_3_fill"),
+    icon = f7Icon("arrowshape_turn_up_right_circle"),
+    active = TRUE,
     f7Tabs(
       id = ns("share_tabset"),
       style = "strong",
       animated = TRUE,
       swipeable = FALSE,
-      mod_share_panel_ui(ns("share_panel_ui")),
-      mod_share_post_ui(ns("share_post_ui")),
-      mod_share_subscribe_ui(ns("share_subscribe_ui"))
+      mod_share_tabs_ui(ns("jobs"), "Jobs", "briefcase_fill"),
+      mod_share_tabs_ui(ns("services"), "Services", "person_2_square_stack"),
+      mod_share_tabs_ui(ns("upcycle"), "Upcycle", "gift_fill")
     )
   )
 }
@@ -30,9 +31,16 @@ mod_share_ui <- function(id){
 mod_share_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
-    mod_share_panel_server("share_panel_ui")
-    mod_share_post_server("share_post_ui")
-    mod_share_subscribe_server("share_subscribe_ui")
+    # Load Post Data
+    ls_posts <- GetPostData()
+    dt_jobs <- ls_posts$jobs
+    dt_services <- ls_posts$services
+    dt_upcycle <- ls_posts$upcycle
+    
+    # Posts tabs server side
+    mod_share_tabs_server("jobs", dt_jobs)
+    mod_share_tabs_server("services", dt_services)
+    mod_share_tabs_server("upcycle", dt_upcycle)
   })
 }
 

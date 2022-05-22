@@ -13,17 +13,17 @@ knitr::opts_chunk$set(
 )
 ```
 
-# socialministryapp
+# shareIBC
 
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 <!-- badges: end -->
 
-The goal of socialministryapp is to ...
+The goal of shareIBC is to ...
 
 ## Installation
 
-You can install the released version of socialministryapp from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of shareIBC from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
 install.packages("socialministryapp")
@@ -34,7 +34,7 @@ install.packages("socialministryapp")
 This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
-library(socialministryapp)
+library(shareIBC)
 ## basic example code
 ```
 

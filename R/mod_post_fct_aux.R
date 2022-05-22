@@ -1,102 +1,135 @@
-#' Upload post data to googledrive
+#' Upload post data to Googlesheets
 #' @param name_poster string, name of the poster
 #' @param email_poster string, email of the poster
-#' @param type_post string, type of post. It can be "jobs" or "services"
+#' @param type_post string, type of post. It can be "jobs", "services" or "upcycle"
 #' @param subject string, subject of the post
 #' @param description string, description of the post
 #' @param contact_email string, email to contact about the post
 #' @param contact_phone string, phone number to contact about the post
 #' @param files_tmp dataframe that contains the names, sizes, MIME types and datapaths of the uploaded files
 #' @param gdpr_acceptance boolean, whether the poster has accepted or not the
-#' @importFrom googledrive drive_get drive_mkdir drive_ls drive_upload
+#' @importFrom googledrive drive_get drive_mkdir drive_ls drive_upload drive_share_anyone
 #' @importFrom googlesheets4 read_sheet sheet_append
+#' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body gm_attach_file gm_send_message
 UploadPost <- function(name_poster,
                        email_poster,
-                       type_post = c("jobs", "services"),
+                       type_post = c("jobs", "services", "upcycle"),
                        subject,
                        description,
                        contact_email,
                        contact_phone,
                        files_tmp,
                        gdpr_acceptance){
-  # Read googlesheet
-  wb <- drive_get("posts/DT_POSTS")
-  dt <- read_sheet(wb, sheet = "DATABASE")
-  dt_approvers <- read_sheet(wb, sheet = "APPROVERS")
-  # Condition depending whether the contact email is provided or not
-  if (isTruthy(contact_email)) {
-    cond_email <- is_valid_email(email_poster) & is_valid_email(contact_email)
-  } else {
-    cond_email <- is_valid_email(email_poster)
-  }
-  # Output conditioned to whether the email is valid or not
-  if (cond_email) {
-    # Successfull operation
-    success <- TRUE
-    Ops.error <- NULL
-    id_post <- paste0("POST_", stringr::str_pad(nrow(dt) + 1, width = 6, pad = "0"))
-    # Create googledrive directory to store data about the post
-    # Store uploaded files, if any
-    if (isTruthy(files_tmp)) {
-      drive_directory <- paste0("posts/", id_post)
-      drive_mkdir(drive_directory)
-      # Beautify files path
-      files_names <- files_tmp$name
-      files_path <- fixUploadedFilesNames(files_tmp)$datapath
-      # Upload files to googledrive
-      for (k in 1:length(files_path)) {
-        drive_upload(files_path[k], path = drive_directory, name = files_names[k])
+  # Type of post - input control
+  type_post <- match.arg(type_post)
+  success <- TRUE
+  Ops.error <- NULL
+  
+  # Send post for approval
+  tryCatch(
+    {
+      # Read googlesheets' tables
+      print("Reading googlesheets database...")
+      wb <- drive_get("posts/DT_POSTS")
+      dt_approvers <- read_sheet(wb, sheet = "APPROVERS")
+      dt <- read_sheet(wb, sheet = "DATABASE")
+      
+      # Condition depending whether the contact email is provided or not
+      if (isTruthy(contact_email)) {
+        cond_email <- is_valid_email(email_poster) & is_valid_email(contact_email)
+      } else {
+        cond_email <- is_valid_email(email_poster)
       }
-      files_id <- paste(drive_ls(drive_directory)$id, collapse = ",")
-    } else {
-      files_path <- NULL
-      files_id <- ""
+      
+      # Output conditioned to whether the email is valid or not
+      if (cond_email) {
+        # Create POST ID
+        id_post <- 
+          paste0("POST_", stringr::str_pad(nrow(dt) + 1, width = 6, pad = "0"))
+        
+        # Create googledrive directory to store data about the post
+        # Store uploaded files, if any
+        if (isTruthy(files_tmp)) {
+          print("Creating folder to store images of the post...")
+          drive_directory <- paste0("posts/", id_post)
+          drive_mkdir(drive_directory)
+          # Beautify files path
+          files_names <- files_tmp$name
+          files_path <- fixUploadedFilesNames(files_tmp)$datapath
+          # Upload files to googledrive
+          print("Uploading images to googledrive directory...")
+          for (k in 1:length(files_path)) {
+            files_path[k] %>% 
+              drive_upload(path = drive_directory, name = files_names[k]) %>% 
+              drive_share_anyone()
+          }
+          files_id <- paste(drive_ls(drive_directory)$id, collapse = ",")
+        } else {
+          files_path <- NULL
+          files_id <- ""
+        }
+        
+        # Append new entry
+        print("Add new entry to database...")
+        new_entry <-
+          data.frame(ID_POST = id_post,
+                     NAME_POSTER = name_poster,
+                     EMAIL_POSTER = email_poster,
+                     TYPE_OFFER = type_post,
+                     SUBJECT = subject,
+                     DESCRIPTION = description,
+                     CONTACT_EMAIL = contact_email,
+                     CONTACT_PHONE = contact_phone,
+                     FILES_ID = files_id,
+                     GDPR_ACCEPTANCE = gdpr_acceptance,
+                     DATE_POST = as.character(Sys.time()),
+                     STATUS = "In progress",
+                     ID_APPROVER = "",
+                     COMMENTS_APPROVER = "",
+                     DATE_REVISION = "",
+                     CONDITION = "")
+        sheet_append(ss = wb, data = new_entry, sheet = "DATABASE")
+        
+        # Get HTML email for approval
+        print("Creating HTML approval request...")
+        PostApprovalHTML(id_post,
+                         name_poster,
+                         email_poster,
+                         type_post,
+                         subject,
+                         description,
+                         contact_email,
+                         contact_phone)
+        
+        # Send approval email
+        print("Sending post approval request to admins...")
+        # Compose email
+        message <- 
+          gm_mime() %>% 
+          gm_to(dt_approvers$EMAIL) %>% 
+          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_subject("A New Request Requires Your Approval!") %>% 
+          gm_html_body(paste(readLines(app_sys("app/messages/request_post.html")), collapse = ""))
+        # Attach files, if any
+        if (length(files_path) > 1) {
+          for (k in 1:length(files_path)) {
+            message <- gm_attach_file(message, files_path[k])
+          }
+        }
+        # Send email
+        gm_send_message(message)
+      } else {
+        # Not successfull operation
+        Ops.error <- "One or both of the introduced emails are not valid, please try again."
+      }
+    },
+    error = function(e){
+      message(e)
+      Ops.error <<- e
+      NULL
     }
-    # Append new entry
-    new_entry <-
-      data.frame(ID_POST = id_post,
-                 NAME_POSTER = name_poster,
-                 EMAIL_POSTER = email_poster,
-                 TYPE_OFFER = type_post,
-                 SUBJECT = subject,
-                 DESCRIPTION = description,
-                 CONTACT_EMAIL = contact_email,
-                 CONTACT_PHONE = contact_phone,
-                 FILES_ID = files_id,
-                 GDPR_ACCEPTANCE = gdpr_acceptance,
-                 DATE_POST = as.character(Sys.time()),
-                 STATUS = "In progress",
-                 ID_APPROVER = "",
-                 COMMENTS_APPROVER = "",
-                 DATE_REVISION = "")
-    sheet_append(ss = wb, data = new_entry, sheet = "DATABASE")
-    # Get HTML email for approval
-    PostApprovalHTML(id_post,
-                     name_poster,
-                     email_poster,
-                     type_post,
-                     subject,
-                     description,
-                     contact_email,
-                     contact_phone)
-    # Send approval email
-    send.mail(from = "Social Ministry IBC <jobs@ibcmadrid.com>",
-              to = dt_approvers$EMAIL,
-              subject = "A New Request Requires Your Approval!",
-              body = app_sys("app/messages/request_post.html"),
-              html = TRUE,
-              inline = T,
-              smtp = list(host.name = "smtp.yandex.com", port =  465,
-                          user.name = "jobs@ibcmadrid.com",
-                          passwd = "fAC3pGdUnd1", ssl = TRUE),
-              authenticate = TRUE,
-              send = TRUE,
-              attach.files = files_path)
-  } else {
-    # Not successfull operation
-    success <- FALSE
-    Ops.error <- "One or both of the introduced emails are not valid, please try again."
-  }
+  )
+  
   return(
     list(success = success,
          Ops.error = Ops.error)
@@ -115,16 +148,20 @@ UploadPost <- function(name_poster,
 PostApprovalHTML <- function(id_post,
                              name_poster,
                              email_poster,
-                             type_post = c("jobs", "services"),
+                             type_post = c("jobs", "services", "upcycle"),
                              subject,
                              description,
                              contact_email,
                              contact_phone){
-  # Pretty type of post names
+  # Type of post - input control
+  type_post <- match.arg(type_post)
+  
+  # Pretty names - type of post
   type_post <- 
     plyr::mapvalues(type_post,
-                    from = c("jobs", "services"),
-                    c("Job opportunities", "Offer your services"),
+                    from = c("jobs", "services", "upcycle"),
+                    c("Job opportunities", "Offer your services",
+                      "Upcycle and donate"),
                     warn_missing = FALSE)
   # Create custom HTML doc
   html_post <-
@@ -137,7 +174,7 @@ PostApprovalHTML <- function(id_post,
           tags$div(
             style = "width:70%;text-align:center;border:1px solid #dddddd;border-radius:5px;padding:10px 50px;margin:0 auto 20px",
             tags$p(style = "font-size: 18px", paste("Request #", id_post, "|", format(Sys.Date(), "%A, %d %B %Y"))),
-            tags$h2("Post a job opportunity or offer your services"),
+            tags$h2("Share with your IBC church community"),
             tags$p(
               style = "text-align: left; padding-left: 10px; margin-bottom: 0;",
               "A new request requires your approval!"
@@ -263,8 +300,12 @@ PostApprovalHTML <- function(id_post,
             )
           ),
           hr(),
-          p(strong("Benevolence Ministry Team")),
-          tags$img(src = app_sys('app/messages/IBC_logo_1.png'), alt = 'My Logo', width = '200', height = '50')
+          p(strong("Social Ministry Team")),
+          tags$img(
+            src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
+            width = 200,
+            height = 50
+          )
         )
       )
     )
