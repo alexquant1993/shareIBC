@@ -14,9 +14,9 @@ mod_approval_ui <- function(id){
     hidden = TRUE,
     f7BlockTitle(title = "Approval Request", size = "large") %>%
       f7Align(side = "center"),
-    h4(textOutput("approve_title")) %>% f7Align(side = "center"),
+    h4(textOutput(ns("approve_title"))) %>% f7Align(side = "center"),
     f7TextArea(
-      inputId = ns("comment_approve"),
+      inputId = ns("comment"),
       label = "Your comment",
       placeholder = "Your comment here",
       resize = TRUE
@@ -49,14 +49,16 @@ mod_approval_server <- function(id){
       query <- parseQueryString(session$clientData$url_search)
       req(query[['tab']])
       if (query[['tab']] == 'approval') {
-        shinyMobile::updateF7Tabs(
+        updateF7Tabs(
           session = session,
-          id = 'main_tabset', # Not going to work due to namespace conflict.
+          id = 'main_tabset',
           selected = 'Approve'
         )
+        # Hide toolbar where the different tabs of the app are available
         shinyjs::runjs("$('.toolbar').css('visibility', 'hidden');")
       }
     })
+    
     # Reactive title
     output$approve_title <- renderText({
       query <- parseQueryString(session$clientData$url_search)
@@ -66,22 +68,84 @@ mod_approval_server <- function(id){
     
     # Request is approved
     observeEvent(input$request_approve,{
-      # User-experience stuff
+      # UX approval button  
       shinyjs::disable("request_approve")
-      f7ShowPreloader(color = "blue")
-      shinyjs::hide("error_approve")
+      showF7Preloader(color = "blue")
       on.exit({
         shinyjs::enable("request_approve")
-        f7HidePreloader()
+        hideF7Preloader()
       })
-      tryCatch({
-        
-      },
-      error = function(err) {
-        shinyjs::html("error_approve", err$message)
-        shinyjs::show(id = "error_approve", anim = TRUE, animType = "fade")      
-        shinyjs::logjs(err)
+      
+      # Retrieve data from post URL
+      query <- parseQueryString(session$clientData$url_search)
+      req(query[['id_request']])
+      req(query[['id_approver']])
+      
+      # Workflow if post is approved
+      check_approval <-
+        ApprovePost(
+          id_request = query[['id_request']],
+          id_approver = query[['id_approver']],
+          comment = input$comment
+        )
+      if (check_approval$success) {
+        # Succsessful operation
+        f7Dialog(
+          session = session,
+          title = "Done",
+          text = "Approval workflow completed successfully!",
+          type = "alert"
+        )
+      } else {
+        # Unsuccsesful operation
+        f7Dialog(
+          session = session,
+          title = "Error",
+          text = check_approval$Ops.error,
+          type = "alert"
+        )
+      }
+    })
+    
+    # Request is rejected
+    observeEvent(input$request_reject,{
+      # UX approval button  
+      shinyjs::disable("request_reject")
+      showF7Preloader(color = "blue")
+      on.exit({
+        shinyjs::enable("request_reject")
+        hideF7Preloader()
       })
+      
+      # Retrieve data from post URL
+      query <- parseQueryString(session$clientData$url_search)
+      req(query[['id_request']])
+      req(query[['id_approver']])
+      
+      # Workflow if post is approved
+      check_rejection <-
+        RejectPost(
+          id_request = query[['id_request']],
+          id_approver = query[['id_approver']],
+          comment = input$comment
+        )
+      if (check_rejection$success) {
+        # Succsessful operation
+        f7Dialog(
+          session = session,
+          title = "Done",
+          text = "Approval workflow completed successfully!",
+          type = "alert"
+        )
+      } else {
+        # Unsuccsesful operation
+        f7Dialog(
+          session = session,
+          title = "Error",
+          text = check_rejection$Ops.error,
+          type = "alert"
+        )
+      }
     })
   })
 }

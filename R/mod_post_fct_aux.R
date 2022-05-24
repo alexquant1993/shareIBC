@@ -22,7 +22,6 @@ UploadPost <- function(name_poster,
                        gdpr_acceptance){
   # Type of post - input control
   type_post <- match.arg(type_post)
-  success <- TRUE
   Ops.error <- NULL
   
   # Send post for approval
@@ -87,37 +86,44 @@ UploadPost <- function(name_poster,
                      ID_APPROVER = "",
                      COMMENTS_APPROVER = "",
                      DATE_REVISION = "",
-                     CONDITION = "")
+                     CONDITION = "Open")
         sheet_append(ss = wb, data = new_entry, sheet = "DATABASE")
-        
-        # Get HTML email for approval
-        print("Creating HTML approval request...")
-        PostApprovalHTML(id_post,
-                         name_poster,
-                         email_poster,
-                         type_post,
-                         subject,
-                         description,
-                         contact_email,
-                         contact_phone)
         
         # Send approval email
         print("Sending post approval request to admins...")
-        # Compose email
-        message <- 
-          gm_mime() %>% 
-          gm_to(dt_approvers$EMAIL) %>% 
-          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
-          gm_subject("A New Request Requires Your Approval!") %>% 
-          gm_html_body(paste(readLines(app_sys("app/messages/request_post.html")), collapse = ""))
-        # Attach files, if any
-        if (length(files_path) > 1) {
-          for (k in 1:length(files_path)) {
-            message <- gm_attach_file(message, files_path[k])
+        # Compose email tailored to each approver
+        for (j in 1:length(dt_approvers$EMAIL)) {
+          print("Creating HTML approval request...")
+          PostApprovalHTML(id_post,
+                           name_poster,
+                           email_poster,
+                           type_post,
+                           subject,
+                           description,
+                           contact_email,
+                           contact_phone,
+                           id_approver = dt_approvers$ID_APPROVER[j])
+          # Compose mail
+          message <- 
+            gm_mime() %>% 
+            gm_to(dt_approvers$EMAIL[j]) %>% 
+            gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+            gm_subject("A New Request Requires Your Approval!") %>% 
+            gm_html_body(
+              paste(
+                readLines(app_sys("app/messages/request_post.html")),
+                collapse = ""
+              )
+            )
+          # Attach files, if any
+          if (length(files_path) > 1) {
+            for (k in 1:length(files_path)) {
+              message <- gm_attach_file(message, files_path[k])
+            }
           }
+          # Send email
+          gm_send_message(message)
         }
-        # Send email
-        gm_send_message(message)
       } else {
         # Not successfull operation
         Ops.error <- "One or both of the introduced emails are not valid, please try again."
@@ -129,6 +135,9 @@ UploadPost <- function(name_poster,
       NULL
     }
   )
+  
+  # If there is an error, the operation is not successful
+  success <- ifelse(!is.null(Ops.error), FALSE, TRUE)
   
   return(
     list(success = success,
@@ -145,6 +154,8 @@ UploadPost <- function(name_poster,
 #' @param description string, description of the post
 #' @param contact_email string, email to contact about the post
 #' @param contact_phone string, phone number to contact about the post
+#' @param id_approver string, id of the post approver
+
 PostApprovalHTML <- function(id_post,
                              name_poster,
                              email_poster,
@@ -152,7 +163,8 @@ PostApprovalHTML <- function(id_post,
                              subject,
                              description,
                              contact_email,
-                             contact_phone){
+                             contact_phone,
+                             id_approver){
   # Type of post - input control
   type_post <- match.arg(type_post)
   
@@ -163,6 +175,7 @@ PostApprovalHTML <- function(id_post,
                     c("Job opportunities", "Offer your services",
                       "Upcycle and donate"),
                     warn_missing = FALSE)
+  
   # Create custom HTML doc
   html_post <-
     tags$html(
@@ -294,7 +307,13 @@ PostApprovalHTML <- function(id_post,
                         background-color: #88be00;
                         border: 2px solid #88be00;",
                 target = "_blank",
-                href = "http://178.62.110.168:3838/?unsubscribe=TRUE",
+                href = 
+                  paste0(
+                    "http://127.0.0.1:3838/?tab=approval&id_request=",
+                    id_post,
+                    "&id_approver=",
+                    id_approver
+                  ),
                 "Approve/Reject"
               )
             )

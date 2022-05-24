@@ -23,7 +23,8 @@ Imports:
     stringr,
     plyr,
     waiter,
-    gmailr
+    gmailr,
+    httr
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.2

@@ -38,7 +38,7 @@ app_ui <- function(request) {
           )
         ),
         f7Tabs(
-          id =  "main_tabset",
+          id =  "approval_ui-main_tabset", # name set to avoid name issues with approval module
           swipeable = TRUE,
           animated = FALSE,
           mod_share_ui("share_ui"),

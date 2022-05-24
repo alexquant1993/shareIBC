@@ -23,6 +23,8 @@ usethis::use_package( "googledrive" )
 usethis::use_package( "googlesheets4" )
 usethis::use_package( "stringr" )
 usethis::use_package( "waiter" )
+usethis::use_package( "httr" )
+
 
 
 
@@ -36,7 +38,7 @@ golem::add_module( name = "share_panel" ) # Name of the module
 golem::add_module( name = "request" ) # Name of the module
 golem::add_module( name = "about" ) # Name of the module
 golem::add_module( name = "info" ) # Name of the module
-golem::add_module( name = "approval", fct = "workflow") # Name of the module
+golem::add_module( name = "approval", fct = "aux") # Name of the module
 
 
 

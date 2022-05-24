@@ -177,46 +177,39 @@ mod_post_tabs_server <- function(id){
       # User loading experience
       shinyjs::disable("submit_post")
       showF7Preloader(color = "blue")
-      shinyjs::hide("error_post")
       on.exit({
         shinyjs::enable("submit_post")
         hideF7Preloader()
       })
       
       # Upload data and send pre-approval email
-      tryCatch({
-        out <- 
-          UploadPost(input$name_poster,
-                     input$email_poster,
-                     type_post = id,
-                     input$subject,
-                     input$description,
-                     input$contact_email,
-                     input$contact_phone,
-                     input$attach_post,
-                     input$check_rgpd_post)
-        if (out$success) {
-          # Succsessful operation
-          f7Dialog(
-            session = session,
-            title = "Done",
-            text = "Thank you for your contribution! A confirmation email will be sent to you once your post is approved.",
-            type = "alert"
-          )
-        } else {
-          # Unsuccsesful operation
-          f7Dialog(
-            session = session,
-            title = "Error",
-            text = out$Ops.error,
-            type = "alert"
-          )
-        }
-      }, error = function(err){
-        shinyjs::html("error_post", err$message)
-        shinyjs::show(id = "error_post", anim = TRUE, animType = "fade")      
-        shinyjs::logjs(err)
-      })
+      check_upload <- 
+        UploadPost(input$name_poster,
+                   input$email_poster,
+                   type_post = id,
+                   input$subject,
+                   input$description,
+                   input$contact_email,
+                   input$contact_phone,
+                   input$attach_post,
+                   input$check_rgpd_post)
+      if (check_upload$success) {
+        # Succsessful operation
+        f7Dialog(
+          session = session,
+          title = "Done",
+          text = "Thank you for your contribution! A confirmation email will be sent to you once your post is approved.",
+          type = "alert"
+        )
+      } else {
+        # Unsuccsesful operation
+        f7Dialog(
+          session = session,
+          title = "Error",
+          text = check_upload$Ops.error,
+          type = "alert"
+        )
+      }
     })
   })
 }
