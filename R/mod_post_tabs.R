@@ -184,16 +184,25 @@ mod_post_tabs_server <- function(id){
       
       # Upload data and send pre-approval email
       check_upload <- 
-        UploadPost(input$name_poster,
-                   input$email_poster,
-                   type_post = id,
-                   input$subject,
-                   input$description,
-                   input$contact_email,
-                   input$contact_phone,
-                   input$attach_post,
-                   input$check_rgpd_post)
+        UploadPost(
+          input$name_poster,
+          input$email_poster,
+          type_post = id,
+          input$subject,
+          input$description,
+          input$contact_email,
+          input$contact_phone,
+          input$attach_post,
+          input$check_rgpd_post
+        )
       if (check_upload$success) {
+        # Clean filled data
+        lapply(
+          c("name_poster", "email_poster", "subject", "description",
+            "contact_email", "contact_phone"),
+          function(x) updateF7Text(x, value = "")
+        )
+        updateF7Checkbox("check_rgpd_post", value = FALSE)
         # Succsessful operation
         f7Dialog(
           session = session,

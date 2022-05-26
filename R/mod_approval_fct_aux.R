@@ -5,7 +5,7 @@
 #' @param comment string, comments related to the post approval
 #' @importFrom googledrive drive_get
 #' @importFrom googlesheets4 read_sheet range_write
-#' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body gm_send_message
+#' @importFrom gmailr gm_mime gm_to gm_bcc gm_from gm_subject gm_html_body gm_send_message
 ApprovePost <- function(id_request, id_approver, comment){
   Ops.error <- NULL
   
@@ -17,84 +17,88 @@ ApprovePost <- function(id_request, id_approver, comment){
       dt <- read_sheet(wb, sheet = "DATABASE")
       dt_post <- dt[dt$ID_POST == id_request, ]
       
-      # Send confirmation mail to the poster
-      print("Creating HTML confirmation mail...")
-      ConfirmationPostHTML(id_request)
-      print("Sending confirmation mail to posters...")
-      message <- 
-        gm_mime() %>% 
-        gm_to(dt_post$EMAIL_POSTER) %>% 
-        gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
-        gm_subject(paste("Post approval confirmation with ID code", id_request)) %>% 
-        gm_html_body(
-          paste(
-            readLines(app_sys("app/messages/confirmation_post.html")),
-            collapse = ""
+      if (dt_post$STATUS == "In progress") {
+        # Send confirmation mail to the poster
+        print("Creating HTML confirmation mail...")
+        ConfirmationPostHTML(id_request)
+        print("Sending confirmation mail to posters...")
+        message <- 
+          gm_mime() %>% 
+          gm_to(dt_post$EMAIL_POSTER) %>% 
+          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_subject(paste("Post approval confirmation with ID code", id_request)) %>% 
+          gm_html_body(
+            paste(
+              readLines(app_sys("app/messages/confirmation_post.html")),
+              collapse = ""
+            )
           )
-        )
-      gm_send_message(message)
-      
-      # Send post to the current mailing list
-      print("HTML creation of the approved post...")
-      ApprovedPostHTML(dt_post)
-      print("Getting current mailing list...")
-      wb_ml <- drive_get("mailing_list/DT_MAILING_LIST")
-      dt_ml <- read_sheet(wb_ml, sheet = "DATABASE")
-      if (dt_post$TYPE_POST == "jobs") {
-        mailing_list <- dt_ml[dt_ml$ACTIVE_JOBS, ]$EMAIL
-      } else if (dt_post$TYPE_POST == "services") {
-        mailing_list <- dt_ml[dt_ml$ACTIVE_SERVICES, ]$EMAIL
-      } else if (dt_post$TYPE_POST == "upcycle") {
-        mailing_list <- dt_ml[dt_ml$ACTIVE_UPCYCLE, ]$EMAIL
-      }
-      
-      print("Sending approved post to current mailing list...")
-      message <- 
-        gm_mime() %>% 
-        gm_bcc(mailing_list) %>% 
-        gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
-        gm_subject("Share IBC Update!") %>% 
-        gm_html_body(
-          paste(
-            readLines(app_sys("app/messages/approved_post.html")),
-            collapse = ""
+        gm_send_message(message)
+        
+        # Send post to the current mailing list
+        print("HTML creation of the approved post...")
+        ApprovedPostHTML(dt_post)
+        print("Getting current mailing list...")
+        wb_ml <- drive_get("mailing_list/DT_MAILING_LIST")
+        dt_ml <- read_sheet(wb_ml, sheet = "DATABASE")
+        if (dt_post$TYPE_POST == "jobs") {
+          mailing_list <- dt_ml[dt_ml$ACTIVE_JOBS, ]$EMAIL
+        } else if (dt_post$TYPE_POST == "services") {
+          mailing_list <- dt_ml[dt_ml$ACTIVE_SERVICES, ]$EMAIL
+        } else if (dt_post$TYPE_POST == "upcycle") {
+          mailing_list <- dt_ml[dt_ml$ACTIVE_UPCYCLE, ]$EMAIL
+        }
+        
+        print("Sending approved post to current mailing list...")
+        message <- 
+          gm_mime() %>% 
+          gm_bcc(mailing_list) %>% 
+          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_subject("Share IBC Update!") %>% 
+          gm_html_body(
+            paste(
+              readLines(app_sys("app/messages/approved_post.html")),
+              collapse = ""
+            )
           )
-        )
-      # Attach pictures, when they are available in the post
-      files_id <- dt_post$FILES_URL
-      if (!is.na(files_id)) {
-        print("Attaching pictures...")
-        # Split the id files
-        files_id <- strsplit(files_id, ",", fixed = TRUE)[[1]]
-        # Get the Google Drive public URL addresses
-        files_url <-
-          sapply(
-            files_id,
-            function (x) paste0("https://lh3.googleusercontent.com/d/", x)
-          )
-        # Attach files recursively
-        if (length(files_url) > 1) {
-          for (k in 1:length(files_url)) {
-            # TODO - fix this, attach file from URL
-            message <- gm_attach_url(message, files_url[k])
+        # Attach pictures, when they are available in the post
+        files_id <- dt_post$FILES_URL
+        if (!is.na(files_id)) {
+          print("Attaching pictures...")
+          # Split the id files
+          files_id <- strsplit(files_id, ",", fixed = TRUE)[[1]]
+          # Get the Google Drive public URL addresses
+          files_url <-
+            sapply(
+              files_id,
+              function (x) paste0("https://lh3.googleusercontent.com/d/", x)
+            )
+          # Attach files recursively
+          if (length(files_url) > 1) {
+            for (k in 1:length(files_url)) {
+              # TODO - fix this, attach file from URL
+              message <- gm_attach_url(message, files_url[k])
+            }
           }
         }
+        gm_send_message(message)
+        
+        # Update post status to approved
+        print("Updating post status to approved")
+        col <- which(colnames(dt) == "STATUS")
+        col <- LETTERS[col]
+        row <- which(dt$ID_POST == id_request) + 1
+        range <- paste0(col,row)
+        range_write(
+          wb,
+          data = data.frame("Approved", id_approver, comment, Sys.time()),
+          sheet = "DATABASE",
+          range = range,
+          col_names = FALSE
+        )
+      } else {
+        Ops.error <- paste("The post has already been", dt_post$STATUS)
       }
-      gm_send_message(message)
-      
-      # Update post status to approved
-      print("Updating post status to approved")
-      col <- which(colnames(dt) == "STATUS")
-      col <- LETTERS[col]
-      row <- which(dt$ID_POST == id_request) + 1
-      range <- paste0(col,row)
-      range_write(
-        wb,
-        data = data.frame("Approved", id_approver, comment, Sys.time()),
-        sheet = "DATABASE",
-        range = range,
-        col_names = FALSE
-      )
     },
     error = function(e){
       message(e)
@@ -303,36 +307,40 @@ RejectPost <- function(id_request, id_approver, comment){
       dt <- read_sheet(wb, sheet = "DATABASE")
       dt_post <- dt[dt$ID_POST == id_request, ]
       
-      # Send rejection mail to the poster
-      print("Creating HTML rejection mail...")
-      RejectionPostHTML(id_request, comment)
-      print("Sending rejection mail to poster...")
-      message <- 
-        gm_mime() %>% 
-        gm_to(dt_post$EMAIL_POSTER) %>% 
-        gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
-        gm_subject(paste("Post rejection notification with ID code", id_request)) %>% 
-        gm_html_body(
-          paste(
-            readLines(app_sys("app/messages/rejected_post.html")),
-            collapse = ""
+      if (dt_post$STATUS == "In progress") {
+        # Send rejection mail to the poster
+        print("Creating HTML rejection mail...")
+        RejectionPostHTML(id_request, comment)
+        print("Sending rejection mail to poster...")
+        message <- 
+          gm_mime() %>% 
+          gm_to(dt_post$EMAIL_POSTER) %>% 
+          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_subject(paste("Post rejection notification with ID code", id_request)) %>% 
+          gm_html_body(
+            paste(
+              readLines(app_sys("app/messages/rejected_post.html")),
+              collapse = ""
+            )
           )
+        gm_send_message(message)
+        
+        # Update post status to rejected
+        print("Updating post status to rejected...")
+        col <- which(colnames(dt) == "STATUS")
+        col <- LETTERS[col]
+        row <- which(dt$ID_POST == id_request) + 1
+        range <- paste0(col,row)
+        range_write(
+          wb,
+          data = data.frame("Rejected", id_approver, comment, Sys.time(), "Closed"),
+          sheet = "DATABASE",
+          range = range,
+          col_names = FALSE
         )
-      gm_send_message(message)
-      
-      # Update post status to rejected
-      print("Updating post status to rejected...")
-      col <- which(colnames(dt) == "STATUS")
-      col <- LETTERS[col]
-      row <- which(dt$ID_POST == id_request) + 1
-      range <- paste0(col,row)
-      range_write(
-        wb,
-        data = data.frame("Rejected", id_approver, comment, Sys.time()),
-        sheet = "DATABASE",
-        range = range,
-        col_names = FALSE
-      )
+      } else {
+        Ops.error <- paste("The post has already been", dt_post$STATUS)
+      }
     },
     error = function(e){
       message(e)

@@ -89,22 +89,26 @@ mod_approval_server <- function(id){
           comment = input$comment
         )
       if (check_approval$success) {
-        # Succsessful operation
+        # Successful operation
         f7Dialog(
+          id = ns("ok_approve"),
           session = session,
           title = "Done",
           text = "Approval workflow completed successfully!",
-          type = "alert"
+          type = "confirm"
         )
       } else {
         # Unsuccsesful operation
         f7Dialog(
+          id = ns("ok_approve_error"),
           session = session,
           title = "Error",
           text = check_approval$Ops.error,
-          type = "alert"
+          type = "confirm"
         )
       }
+      # Clear filled data
+      updateF7Text("comment", value = "")
     })
     
     # Request is rejected
@@ -130,23 +134,45 @@ mod_approval_server <- function(id){
           comment = input$comment
         )
       if (check_rejection$success) {
-        # Succsessful operation
+        # Successful operation
         f7Dialog(
+          id = ns("ok_reject"),
           session = session,
           title = "Done",
-          text = "Approval workflow completed successfully!",
-          type = "alert"
+          text = "Rejection workflow completed successfully!",
+          type = "confirm"
         )
       } else {
         # Unsuccsesful operation
         f7Dialog(
+          id = ns("ok_reject_error"),
           session = session,
           title = "Error",
           text = check_rejection$Ops.error,
-          type = "alert"
+          type = "confirm"
         )
       }
+      # Clear filled data
+      updateF7Text("comment", value = "")
     })
+    
+    # Stop App when finished and close window after 5s, if ok bttn is triggered
+    lapply(
+      c("ok_approve", "ok_approve_error", "ok_reject", "ok_reject_error"),
+      function(x){
+        observeEvent(
+          input[[x]],
+          {
+            f7Toast(
+              "The approval workflow is finished. The window will close in 5 seconds.",
+              position = "center",
+              closeButton = FALSE,
+              closeTimeout = 5000
+            )
+            shinyjs::runjs("setTimeout(function(){window.close();},5000);")
+          })
+      }
+    )
   })
 }
 

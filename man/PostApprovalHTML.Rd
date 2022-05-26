@@ -12,7 +12,8 @@ PostApprovalHTML(
   subject,
   description,
   contact_email,
-  contact_phone
+  contact_phone,
+  id_approver
 )
 }
 \arguments{
@@ -31,6 +32,8 @@ PostApprovalHTML(
 \item{contact_email}{string, email to contact about the post}
 
 \item{contact_phone}{string, phone number to contact about the post}
+
+\item{id_approver}{string, id of the post approver}
 }
 \description{
 Create HTML report to be sent to the post approvers

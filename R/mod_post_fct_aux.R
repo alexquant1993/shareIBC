@@ -50,7 +50,12 @@ UploadPost <- function(name_poster,
         # Store uploaded files, if any
         if (isTruthy(files_tmp)) {
           print("Creating folder to store images of the post...")
-          drive_directory <- paste0("posts/", id_post)
+          if (!(id_post %in% drive_ls("posts")$name)) {
+            drive_directory <- paste0("posts/", id_post)
+          } else {
+            # Create aux name when there is already a folder name with the id_post
+            drive_directory <- paste0("posts/", id_post, "_", sample(1:100, 1))
+          }
           drive_mkdir(drive_directory)
           # Beautify files path
           files_names <- files_tmp$name
@@ -94,15 +99,17 @@ UploadPost <- function(name_poster,
         # Compose email tailored to each approver
         for (j in 1:length(dt_approvers$EMAIL)) {
           print("Creating HTML approval request...")
-          PostApprovalHTML(id_post,
-                           name_poster,
-                           email_poster,
-                           type_post,
-                           subject,
-                           description,
-                           contact_email,
-                           contact_phone,
-                           id_approver = dt_approvers$ID_APPROVER[j])
+          PostApprovalHTML(
+            id_post,
+            name_poster,
+            email_poster,
+            type_post,
+            subject,
+            description,
+            contact_email,
+            contact_phone,
+            id_approver = dt_approvers$ID_APPROVER[j]
+          )
           # Compose mail
           message <- 
             gm_mime() %>% 
