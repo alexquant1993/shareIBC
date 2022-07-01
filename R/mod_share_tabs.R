@@ -13,7 +13,10 @@ mod_share_tabs_ui <- function(id, tabName, icon){
   f7Tab(
     tabName = tabName,
     icon = f7Icon(icon),
-    uiOutput(ns("ls_posts"))
+    uiOutput(ns("ls_posts")) %>% f7Found(),
+    f7Block(
+      p("Nothing found.")
+    ) %>% f7NotFound()
   )
 }
 
@@ -27,9 +30,9 @@ mod_share_tabs_server <- function(id, dt_posts){
     output$ls_posts <- renderUI({
       if (nrow(dt_posts) > 0) {
         lapply(1:nrow(dt_posts), function(i){
-          # Retrive post information
+          # Retrieve post information
           id_post <- dt_posts$ID_POST[i]
-          date <- format(dt_posts$DATE_POST[i], "%B %d, %Y") 
+          date <- format(dt_posts$DATE_POST[i], "%B %d, %Y")
           subject <- dt_posts$SUBJECT[i]
           description <- dt_posts$DESCRIPTION[i]
           email <- replaceTruthy(dt_posts$CONTACT_EMAIL[i])
@@ -38,7 +41,7 @@ mod_share_tabs_server <- function(id, dt_posts){
           
           # Create post footer UI
           # Conditional UI depending if there are uploaded pictures or not.
-          if (any(!is.na(dt_posts$FILES_URL))) {
+          if (!is.na(dt_posts$FILES_URL[i])) {
             footer <-
               tagList(
                 f7Row(
@@ -75,11 +78,13 @@ mod_share_tabs_server <- function(id, dt_posts){
           }
           
           # Create Post UI
-          f7Post(subject = subject,
-                 date = date,
-                 type = type,
-                 content = description,
-                 footer = footer)
+          f7Post(
+            subject = subject,
+            date = date,
+            type = type,
+            content = description,
+            footer = footer
+          )
         })
       }
     })

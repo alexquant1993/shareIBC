@@ -33,7 +33,16 @@ app_ui <- function(request) {
           shadow = TRUE,
           transparent = FALSE,
           subNavbar = f7SubNavbar(
-            f7Searchbar(id = "search_post", inline = TRUE),
+            f7Searchbar(
+              id = "search_post",
+              inline = TRUE,
+              options = 
+                list(
+                  searchContainer = '.shiny-html-output', #Posts container
+                  searchItem = ".card", # CSS selector unit
+                  searchIn = c('.card-subject', '.card-content') # where to search
+                )
+            ),
             mod_post_ui("post_ui")
           )
         ),

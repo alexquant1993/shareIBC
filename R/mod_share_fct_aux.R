@@ -17,8 +17,8 @@ f7Post <- function(subject,
   headerTag <-
     shiny::tags$div(
       class = "card-header",
-      shiny::tags$div(class = "post-subject", subject),
-      shiny::tags$div(class = "post-date", date)
+      shiny::tags$div(class = "card-subject", subject),
+      shiny::tags$div(class = "card-date", date)
     )
   
   # Post content UI
@@ -62,6 +62,8 @@ GetPostData <- function(){
         DATE_POST >= Sys.Date() - 120 &
         CONDITION == "Open"
     )
+  # Order posts in chronological order
+  dt_out <- dt_out[order(dt_out$DATE_POST, decreasing = TRUE),]
   return(
     list(
       jobs = subset(dt_out, TYPE_POST == "jobs"),

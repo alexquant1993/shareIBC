@@ -18,12 +18,12 @@
   display: block;
 }
 
-.post-subject {
+.card-subject {
   font-size: 14px;
   font-weight: 500;
 }
 
-.post-date {
+.card-date {
   font-size: 13px;
   color: #8e8e93;
 }
