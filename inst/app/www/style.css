@@ -64,4 +64,8 @@
   white-space: unset !important;
 }
 
+/*block-title changes*/
+.block-title{
+  margin-top: 0px;
+}
 

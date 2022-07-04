@@ -19,9 +19,24 @@ mod_share_ui <- function(id){
       style = "strong",
       animated = TRUE,
       swipeable = FALSE,
-      mod_share_tabs_ui(ns("jobs"), "Jobs", "briefcase_fill"),
-      mod_share_tabs_ui(ns("services"), "Services", "person_2_square_stack"),
-      mod_share_tabs_ui(ns("upcycle"), "Upcycle", "gift_fill")
+      mod_share_tabs_ui(
+        ns("jobs"),
+        "Jobs",
+        "briefcase_fill",
+        "Job Opportunities"
+      ),
+      mod_share_tabs_ui(
+        ns("services"),
+        "Services",
+        "person_2_square_stack",
+        "Professional Services"
+      ),
+      mod_share_tabs_ui(
+        ns("upcycle"),
+        "Upcycle",
+        "gift_fill",
+        "Upcycle and Donate"
+      )
     )
   )
 }

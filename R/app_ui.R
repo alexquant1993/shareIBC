@@ -53,7 +53,7 @@ app_ui <- function(request) {
           mod_share_ui("share_ui"),
           mod_request_ui("request_ui"),
           mod_about_ui("about_ui"),
-          mod_info_ui("info_ui"),
+          mod_more_ui("more_ui"),
           mod_approval_ui("approval_ui")
         )
       )

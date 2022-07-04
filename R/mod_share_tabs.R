@@ -3,16 +3,18 @@
 #' @description A shiny Module.
 #'
 #' @param id,input,output,session Internal parameters for {shiny}.
-#' @param tabName Tab name within the share panel
-#' @param icon framework7 icon name
+#' @param tabName Tab name within the share panel.
+#' @param icon framework7 icon name.
+#' @param title Tab title.
 #' @noRd 
 #'
 #' @importFrom shiny NS tagList 
-mod_share_tabs_ui <- function(id, tabName, icon){
+mod_share_tabs_ui <- function(id, tabName, icon, title){
   ns <- NS(id)
   f7Tab(
     tabName = tabName,
     icon = f7Icon(icon),
+    f7BlockTitle(title = title) %>% f7Align(side = "center"),
     uiOutput(ns("ls_posts")) %>% f7Found(),
     f7Block(
       p("Nothing found.")
@@ -44,15 +46,8 @@ mod_share_tabs_server <- function(id, dt_posts){
           if (!is.na(dt_posts$FILES_URL[i])) {
             footer <-
               tagList(
-                f7Row(
-                  f7Col(
-                    inlineBlock(icon = "envelope", email)
-                  ),
-                  f7Col(
-                    inlineBlock(icon = "phone", phone_number)
-                  )
-                ),
-                br(),
+                f7Row(inlineBlock(icon = "envelope", email)),
+                f7Row(inlineBlock(icon = "phone", phone_number)),
                 f7Button(
                   inputId = ns(paste0("toggle_", id_post)),
                   label =
@@ -66,14 +61,8 @@ mod_share_tabs_server <- function(id, dt_posts){
           } else {
             footer <-
               tagList(
-                f7Row(
-                  f7Col(
-                    inlineBlock(icon = "envelope", email)
-                  ),
-                  f7Col(
-                    inlineBlock(icon = "phone", phone_number)
-                  )
-                )
+                f7Row(inlineBlock(icon = "envelope", email)),
+                f7Row(inlineBlock(icon = "phone", phone_number))
               )
           }
           
