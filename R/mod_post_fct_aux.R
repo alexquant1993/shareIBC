@@ -8,6 +8,7 @@
 #' @param contact_phone string, phone number to contact about the post
 #' @param files_tmp dataframe that contains the names, sizes, MIME types and datapaths of the uploaded files
 #' @param gdpr_acceptance boolean, whether the poster has accepted or not the
+#' @param session	shiny session
 #' @importFrom googledrive drive_get drive_mkdir drive_ls drive_upload drive_share_anyone
 #' @importFrom googlesheets4 read_sheet sheet_append
 #' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body gm_attach_file gm_send_message
@@ -19,7 +20,8 @@ UploadPost <- function(name_poster,
                        contact_email,
                        contact_phone,
                        files_tmp,
-                       gdpr_acceptance){
+                       gdpr_acceptance,
+                       session){
   # Type of post - input control
   type_post <- match.arg(type_post)
   Ops.error <- NULL
@@ -76,22 +78,24 @@ UploadPost <- function(name_poster,
         # Append new entry
         print("Add new entry to database...")
         new_entry <-
-          data.frame(ID_POST = id_post,
-                     NAME_POSTER = name_poster,
-                     EMAIL_POSTER = email_poster,
-                     TYPE_OFFER = type_post,
-                     SUBJECT = subject,
-                     DESCRIPTION = description,
-                     CONTACT_EMAIL = contact_email,
-                     CONTACT_PHONE = contact_phone,
-                     FILES_ID = files_id,
-                     GDPR_ACCEPTANCE = gdpr_acceptance,
-                     DATE_POST = as.character(Sys.time()),
-                     STATUS = "In progress",
-                     ID_APPROVER = "",
-                     COMMENTS_APPROVER = "",
-                     DATE_REVISION = "",
-                     CONDITION = "Open")
+          data.frame(
+            ID_POST = id_post,
+            NAME_POSTER = name_poster,
+            EMAIL_POSTER = email_poster,
+            TYPE_OFFER = type_post,
+            SUBJECT = subject,
+            DESCRIPTION = description,
+            CONTACT_EMAIL = contact_email,
+            CONTACT_PHONE = contact_phone,
+            FILES_ID = files_id,
+            GDPR_ACCEPTANCE = gdpr_acceptance,
+            DATE_POST = as.character(Sys.time()),
+            STATUS = "In progress",
+            ID_APPROVER = "",
+            COMMENTS_APPROVER = "",
+            DATE_REVISION = "",
+            CONDITION = "Open"
+          )
         sheet_append(ss = wb, data = new_entry, sheet = "DATABASE")
         
         # Send approval email
@@ -133,12 +137,20 @@ UploadPost <- function(name_poster,
         }
       } else {
         # Not successfull operation
-        Ops.error <- "One or both of the introduced emails are not valid, please try again."
+        Ops.error <- 
+          "One or both of the introduced emails are not valid,
+          please try again."
       }
     },
     error = function(e){
       message(e)
       Ops.error <<- e
+      f7Dialog(
+        session = session,
+        title = "Error",
+        text = e,
+        type = "alert"
+      )
       NULL
     }
   )
@@ -316,7 +328,8 @@ PostApprovalHTML <- function(id_post,
                 target = "_blank",
                 href = 
                   paste0(
-                    "http://127.0.0.1:3838/?tab=approval&id_request=",
+                    app_url,
+                    "/?tab=approval&id_request=",
                     id_post,
                     "&id_approver=",
                     id_approver

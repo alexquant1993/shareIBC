@@ -120,44 +120,6 @@ formTextArea <- function (inputId,
 }
 
 
-
-#' Form Select element
-#' @param inputId Select input id
-#' @param label Select input label
-#' @param choices Select input choices
-#' @param selected Select input default selected value
-#' @noRd
-formSelect <- function(inputId, label, choices, selected = NULL){
-  options <- createSelectOptions(choices, selected)
-  selectTag <-
-    shiny::tags$li(
-      class = "item-content item-input",
-      shiny::tags$div(
-        class = "item-media",
-        shiny::tags$i(
-          class = "icon demo-list-icon"
-        )
-      ),
-      shiny::tags$div(
-        class = "item-inner",
-        shiny::tags$div(
-          class = "item-title", 
-          label
-        ),
-        shiny::tags$div(
-          class = "item-input-wrap input-dropdown-wrap", 
-          shiny::tags$select(
-            class = "input-select",
-            id = inputId, 
-            placeholer = "Please choose...",
-            options
-          )
-        )
-      )
-    )
-  shiny::tagList(InputsDeps(), selectTag)
-}
-
 #' Form CheckBox element
 #' @param inputId Select input id
 #' @param label Select input label
@@ -202,7 +164,8 @@ formCheckBoxGroup <- function (inputId, label, choices = NULL, selected = NULL) 
           shiny::tags$input(
             type = "checkbox",
             name = inputId, 
-            value = choices[[i]]
+            value = choices[[i]],
+            class = "checkbox_group"
           ),
           shiny::tags$i(class = "icon icon-checkbox"), 
           shiny::tags$div(
@@ -231,65 +194,4 @@ formCheckBoxGroup <- function (inputId, label, choices = NULL, selected = NULL) 
       shiny::tags$ul(choicesTag)
     )
   )
-}
-
-
-
-# Functions not exported by shinyMobile
-#' Auxiliar function not exported by shinyMobile
-#' @noRd
-choicesWithNames <- function (choices) {
-  listify <- function(obj) {
-    makeNamed <- function(x) {
-      if (is.null(names(x))) 
-        names(x) <- character(length(x))
-      x
-    }
-    res <- lapply(obj, function(val) {
-      if (is.list(val)) 
-        listify(val)
-      else if (length(val) == 1 && is.null(names(val))) 
-        val
-      else makeNamed(as.list(val))
-    })
-    makeNamed(res)
-  }
-  choices <- listify(choices)
-  if (length(choices) == 0) 
-    return(choices)
-  choices <- mapply(choices, names(choices), FUN = function(choice, 
-                                                            name) {
-    if (!is.list(choice)) 
-      return(choice)
-    if (name == "") 
-      stop("All sub-lists in \"choices\" must be named.")
-    choicesWithNames(choice)
-  }, SIMPLIFY = FALSE)
-  missing <- names(choices) == ""
-  names(choices)[missing] <- as.character(choices)[missing]
-  choices
-}
-
-#' Auxiliar function not exported by shinyMobile
-#' @noRd
-createSelectOptions <- function (choices, selected) {
-  choices <- choicesWithNames(choices)
-  options <- lapply(X = seq_along(choices), function(i) {
-    shiny::tags$option(value = choices[[i]], names(choices)[i], 
-                       selected = if (!is.null(selected)) {
-                         if (choices[[i]] %in% selected) 
-                           NA
-                         else NULL
-                       })
-  })
-  return(options)
-}
-
-#' F7InputsDeps function
-#' @noRd
-InputsDeps <- function () {
-  htmltools::htmlDependency(name = "framework7-bindings", 
-                            version = as.character(packageVersion("shinyMobile")), 
-                            src = c(file = "framework7-5.5.0", href = "framework7-5.5.0"), 
-                            package = "shinyMobile", script = "framework7.bindings.min.js")
 }

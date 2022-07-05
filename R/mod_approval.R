@@ -86,7 +86,8 @@ mod_approval_server <- function(id){
         ApprovePost(
           id_request = query[['id_request']],
           id_approver = query[['id_approver']],
-          comment = input$comment
+          comment = input$comment,
+          session = session
         )
       if (check_approval$success) {
         # Successful operation
@@ -131,7 +132,8 @@ mod_approval_server <- function(id){
         RejectPost(
           id_request = query[['id_request']],
           id_approver = query[['id_approver']],
-          comment = input$comment
+          comment = input$comment,
+          session = session
         )
       if (check_rejection$success) {
         # Successful operation

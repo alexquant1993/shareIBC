@@ -3,10 +3,11 @@
 #' @param id_request string, id of the request
 #' @param id_approver string, id of the post approver
 #' @param comment string, comments related to the post approval
+#' @param session	shiny session
 #' @importFrom googledrive drive_get
 #' @importFrom googlesheets4 read_sheet range_write
 #' @importFrom gmailr gm_mime gm_to gm_bcc gm_from gm_subject gm_html_body gm_send_message
-ApprovePost <- function(id_request, id_approver, comment){
+ApprovePost <- function(id_request, id_approver, comment, session){
   Ops.error <- NULL
   
   tryCatch(
@@ -76,7 +77,6 @@ ApprovePost <- function(id_request, id_approver, comment){
           # Attach files recursively
           if (length(files_url) > 1) {
             for (k in 1:length(files_url)) {
-              # TODO - fix this, attach file from URL
               message <- gm_attach_url(message, files_url[k])
             }
           }
@@ -103,6 +103,12 @@ ApprovePost <- function(id_request, id_approver, comment){
     error = function(e){
       message(e)
       Ops.error <<- e
+      f7Dialog(
+        session = session,
+        title = "Error",
+        text = e,
+        type = "alert"
+      )
       NULL
     }
   )
@@ -274,7 +280,16 @@ ApprovedPostHTML <- function(dt_post){
               if you have any questions or concerns about the publication,
               please contact the appropriate address provided in the publication."
             ),
-            p(strong("Social Ministry Team")),
+            tags$p("Please do not reply to this email as it was generated
+                    automatically and is not being monitored."),
+            tags$p(
+              "If you wish to unsubscribe from our mailing lists,
+              you can do so by accessing our",
+              tags$a(href = paste0(app_url, "/?unsubscribe=TRUE"),
+                     "SHARE IBC app.")
+            ),
+            p('Thank you so much for being part of the IBC community!'),
+            tags$p(tags$strong("Social Ministry Team")),
             tags$img(
               src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
               width = 200,
@@ -294,10 +309,11 @@ ApprovedPostHTML <- function(dt_post){
 #' @param id_request string, id of the request
 #' @param id_approver string, id of the post approver
 #' @param comment string, comments related to the post rejection
+#' @param session	shiny session
 #' @importFrom googledrive drive_get
 #' @importFrom googlesheets4 read_sheet
 #' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body gm_send_message
-RejectPost <- function(id_request, id_approver, comment){
+RejectPost <- function(id_request, id_approver, comment, session){
   Ops.error <- NULL
   
   tryCatch(
@@ -345,6 +361,12 @@ RejectPost <- function(id_request, id_approver, comment){
     error = function(e){
       message(e)
       Ops.error <<- e
+      f7Dialog(
+        session = session,
+        title = "Error",
+        text = e,
+        type = "alert"
+      )
       NULL
     }
   )

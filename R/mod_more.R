@@ -68,8 +68,10 @@ mod_more_server <- function(id){
         "Unsubscribe to Share IBC Mailing List"
       }
     })
+    
     # Reactive UI
     output$subscriptionUI <- renderUI({
+      # Subscription server side
       if (!input$unsubscribe) {
         tagList(
           "The objective of Share IBC is to help members of IBC and those within
@@ -91,8 +93,7 @@ mod_more_server <- function(id){
             label = "Choose the mailing list(s) you want to subscribe:",
             choices = c("Job opportunities" = "jobs",
                         "Offer your services" = "services",
-                        "Upcycle and donate" = "upcycle"),
-            selected = c("jobs", "services", "upcycle")
+                        "Upcycle and donate" = "upcycle")
           ),
           br(),
           f7Button(
@@ -103,6 +104,7 @@ mod_more_server <- function(id){
           )
         )
       } else {
+        # Unsubscription server side
         tagList(
           "Thank you so much for being part of our community.
           We hope to see you soon!",
@@ -118,8 +120,7 @@ mod_more_server <- function(id){
             label = "Choose the mailing list(s) you want to unsubscribe:",
             choices = c("Job opportunities" = "jobs",
                         "Offer your services" = "services",
-                        "Upcycle and donate" = "upcycle"),
-            selected = c("jobs", "services", "upcycle")
+                        "Upcycle and donate" = "upcycle")
           ),
           br(),
           f7Button(
@@ -132,91 +133,114 @@ mod_more_server <- function(id){
       }
     })
     
-    # Subscription process (send confirmation email)----
+    # Subscription process (send confirmation email)
     observeEvent(input$subscribeBtn, {
       # User-experience stuff
       shinyjs::disable("subscribeBtn")
-      f7ShowPreloader(color = "blue")
-      shinyjs::hide("error")
+      showF7Preloader(color = "blue")
       on.exit({
         shinyjs::enable("subscribeBtn")
-        f7HidePreloader()
+        hideF7Preloader()
       })
       
-      # Send email (show an error message in case of error)
-      tryCatch({
-        out <- add_email(input$name_subs, input$email_subs, input$ml_subs)
-        if (out$success) {
-          # Succsessful operation
-          f7Dialog(
-            session = session,
-            title = "Done",
-            text = "You have successfully updated your preferences!",
-            type = "alert"
-          )
-        } else {
-          # Unsuccsesful operation
-          f7Dialog(
-            session = session,
-            title = "Error",
-            text = out$Ops.error,
-            type = "alert"
-          )
-        }
+      # Add email to selected mailing lists and send confirmation email
+      check_subs <- 
+        SubscribeEmail(
+          name = input$name_subs,
+          email = input$email_subs,
+          mailing_lists = input$ml_subs,
+          session = session
+        )
+      if (check_subs$success) {
+        # Clean filled data
         updateF7Text("name_subs", value = "")
         updateF7Text("email_subs", value = "")
-      },
-      error = function(err) {
-        shinyjs::html("error", err$message)
-        shinyjs::show(id = "error", anim = TRUE, animType = "fade")      
-        shinyjs::logjs(err)
-      })
+        # Uncheck all boxes
+        shinyjs::runjs(
+          "    
+          function uncheckAll() {
+            var inputs = document.querySelectorAll('.checkbox_group');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].checked = false;
+            }
+          }
+          uncheckAll()
+          "
+        )
+        # Succsessful operation
+        f7Dialog(
+          session = session,
+          title = "Done",
+          text = "You have successfully updated your preferences!",
+          type = "alert"
+        )
+      } else {
+        # Unsuccsesful operation
+        f7Dialog(
+          session = session,
+          title = "Error",
+          text = check_subs$Ops.error,
+          type = "alert"
+        )
+      }
     })
     
-    # UNSUBSCRIPTION SERVER-----
-    # Unsubscription confirmation mail
+    # Unsubscription process (send confirmation email)
     observeEvent(input$unsubscribeBtn, {
       # User-experience stuff
       shinyjs::disable("unsubscribeBtn")
-      f7ShowPreloader(color = "blue")
-      shinyjs::hide("error_un")
+      showF7Preloader(color = "blue")
       on.exit({
         shinyjs::enable("unsubscribeBtn")
-        f7HidePreloader()
+        hideF7Preloader()
       })
       
-      # Send email (show an error message in case of error)
-      tryCatch({
-        out <- remove_email(input$email_unsubs, input$ml_unsubs)
-        if (out$success) {
-          f7Dialog(
-            session = session,
-            title = "Done",
-            text = "You have successfully updated your preferences!",
-            type = "alert"
-          )
-        } else {
-          f7Dialog(
-            session = session,
-            title = "Error",
-            text = out$Ops.error,
-            type = "alert"
-          )
-        }
+      # Remove preferences to selected mailing lists and send confirmation email
+      check_unsubs <- 
+        UnsubscribeEmail(
+          email = input$email_unsubs,
+          mailing_lists = input$ml_unsubs,
+          session = session
+        )
+      if (check_unsubs$success) {
+        # Clean filled data
         updateF7Text("email_unsubs", value = "")
-      },
-      error = function(err) {
-        shinyjs::html("error_un", err$message)
-        shinyjs::show(id = "error_un", anim = TRUE, animType = "fade")      
-        shinyjs::logjs(err)
-      })
+        # Uncheck all boxes
+        shinyjs::runjs(
+          "    
+          function uncheckAll() {
+            var inputs = document.querySelectorAll('.checkbox_group');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].checked = false;
+            }
+          }
+          uncheckAll()
+          "
+        )
+        # Succsessful operation
+        f7Dialog(
+          session = session,
+          title = "Done",
+          text = "You have successfully updated your preferences!",
+          type = "alert"
+        )
+      } else {
+        # Unsuccsesful operation
+        f7Dialog(
+          session = session,
+          title = "Error",
+          text = check_subs$Ops.error,
+          type = "alert"
+        )
+      }
     })
     
-    # Enable buttons when all mandatory fields are filled out----
+    # Enable buttons when all mandatory fields are filled out
     observe({
       shinyjs::toggleState(
         id = "subscribeBtn",
-        isTruthy(input$name_subs) & isTruthy(input$email_subs) & isTruthy(input$ml_subs))
+        isTruthy(input$name_subs) & isTruthy(input$email_subs)
+        & isTruthy(input$ml_subs))
       shinyjs::toggleState(
         id = "unsubscribeBtn",
         isTruthy(input$email_unsubs) & isTruthy(input$ml_unsubs))

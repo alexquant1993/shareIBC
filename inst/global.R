@@ -15,3 +15,6 @@ gmailr::gm_auth_configure(path = json_path)
 # Authenticate with the tokens in the copied cache
 # gmailr::gm_auth(cache = secrets_path)
 gmailr::gm_auth(cache = secrets_path, email = TRUE)
+
+# App URL
+app_url <- "http://127.0.0.1:3838"

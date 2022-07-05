@@ -193,7 +193,8 @@ mod_post_tabs_server <- function(id){
           input$contact_email,
           input$contact_phone,
           input$attach_post,
-          input$check_rgpd_post
+          input$check_rgpd_post,
+          session = session
         )
       if (check_upload$success) {
         # Clean filled data
