@@ -26,7 +26,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
         message <- 
           gm_mime() %>% 
           gm_to(dt_post$EMAIL_POSTER) %>% 
-          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_from(gmail_account) %>% 
           gm_subject(paste("Post approval confirmation with ID code", id_request)) %>% 
           gm_html_body(
             paste(
@@ -48,13 +48,15 @@ ApprovePost <- function(id_request, id_approver, comment, session){
           mailing_list <- dt_ml[dt_ml$ACTIVE_SERVICES, ]$EMAIL
         } else if (dt_post$TYPE_POST == "upcycle") {
           mailing_list <- dt_ml[dt_ml$ACTIVE_UPCYCLE, ]$EMAIL
+        } else if (dt_post$TYPE_POST == "mix") {
+          mailing_list <- dt_ml[dt_ml$ACTIVE_MIX, ]$EMAIL
         }
         
         print("Sending approved post to current mailing list...")
         message <- 
           gm_mime() %>% 
           gm_bcc(mailing_list) %>% 
-          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_from(gmail_account) %>% 
           gm_subject("Share IBC Update!") %>% 
           gm_html_body(
             paste(
@@ -158,11 +160,7 @@ ConfirmationPostHTML <- function(id_request){
         p('Thank you so much for being part of the IBC community!'),
         hr(),
         p(strong("Social Ministry Team")),
-        tags$img(
-          src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
-          width = 200,
-          height = 50
-        )
+        tags$img(src = ibc_logo_url, width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/confirmation_post.html"))
@@ -178,9 +176,9 @@ ApprovedPostHTML <- function(dt_post){
   # Pretty names - type of post
   type_post <- 
     plyr::mapvalues(dt_post$TYPE_POST,
-                    from = c("jobs", "services", "upcycle"),
+                    from = c("jobs", "services", "upcycle", "mix"),
                     c("Job opportunities", "Offer your services",
-                      "Upcycle and donate"),
+                      "Upcycle and donate", "Miscellaneous"),
                     warn_missing = FALSE)
   
   # Create custom HTML doc
@@ -290,11 +288,7 @@ ApprovedPostHTML <- function(dt_post){
             ),
             p('Thank you so much for being part of the IBC community!'),
             tags$p(tags$strong("Social Ministry Team")),
-            tags$img(
-              src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
-              width = 200,
-              height = 50
-            )
+            tags$img(src = ibc_logo_url, width = 200, height = 50)
           )
         )
       )
@@ -331,7 +325,7 @@ RejectPost <- function(id_request, id_approver, comment, session){
         message <- 
           gm_mime() %>% 
           gm_to(dt_post$EMAIL_POSTER) %>% 
-          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_from(gmail_account) %>% 
           gm_subject(paste("Post rejection notification with ID code", id_request)) %>% 
           gm_html_body(
             paste(
@@ -402,11 +396,7 @@ RejectionPostHTML <- function(id_request, comment){
         p('Thank you so much for being part of the IBC community!'),
         hr(),
         p(strong("Social Ministry Team")),
-        tags$img(
-          src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
-          width = 200,
-          height = 50
-        )
+        tags$img(src = ibc_logo_url, width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/rejected_post.html"))

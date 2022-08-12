@@ -2,12 +2,12 @@
 #' @param subject post brief description
 #' @param date date of the post
 #' @param type type of post, it can take any of the following:
-#'  c('jobs', 'services', 'upcycle')
+#'  c('jobs', 'services', 'upcycle', 'mix')
 #' @param content post description and details
 #' @param footer Footer content, if any. Must be wrapped in a tagList
 f7Post <- function(subject,
                    date,
-                   type = c("jobs", "services", "upcycle"),
+                   type = c("jobs", "services", "upcycle", "mix"),
                    content,
                    footer = NULL){
   # Input validation
@@ -68,7 +68,8 @@ GetPostData <- function(){
     list(
       jobs = subset(dt_out, TYPE_POST == "jobs"),
       services = subset(dt_out, TYPE_POST == "services"),
-      upcycle = subset(dt_out, TYPE_POST == "upcycle")
+      upcycle = subset(dt_out, TYPE_POST == "upcycle"),
+      mix = subset(dt_out, TYPE_POST == "mix")
     )
   )
 }

@@ -1,7 +1,8 @@
 #' Upload post data to Googlesheets
 #' @param name_poster string, name of the poster
 #' @param email_poster string, email of the poster
-#' @param type_post string, type of post. It can be "jobs", "services" or "upcycle"
+#' @param type_post string, type of post. It can be "jobs", "services", 
+#' "upcycle" or "mix"
 #' @param subject string, subject of the post
 #' @param description string, description of the post
 #' @param contact_email string, email to contact about the post
@@ -14,7 +15,7 @@
 #' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body gm_attach_file gm_send_message
 UploadPost <- function(name_poster,
                        email_poster,
-                       type_post = c("jobs", "services", "upcycle"),
+                       type_post = c("jobs", "services", "upcycle", "mix"),
                        subject,
                        description,
                        contact_email,
@@ -118,7 +119,7 @@ UploadPost <- function(name_poster,
           message <- 
             gm_mime() %>% 
             gm_to(dt_approvers$EMAIL[j]) %>% 
-            gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+            gm_from(gmail_account) %>% 
             gm_subject("A New Request Requires Your Approval!") %>% 
             gm_html_body(
               paste(
@@ -168,7 +169,7 @@ UploadPost <- function(name_poster,
 #' @param id_post string, name of the poster
 #' @param name_poster string, name of the poster
 #' @param email_poster string, email of the poster
-#' @param type_post string, type of post. It can be "jobs" or "services"
+#' @param type_post string, type of post.
 #' @param subject string, subject of the post
 #' @param description string, description of the post
 #' @param contact_email string, email to contact about the post
@@ -178,7 +179,7 @@ UploadPost <- function(name_poster,
 PostApprovalHTML <- function(id_post,
                              name_poster,
                              email_poster,
-                             type_post = c("jobs", "services", "upcycle"),
+                             type_post = c("jobs", "services", "upcycle", "mix"),
                              subject,
                              description,
                              contact_email,
@@ -190,9 +191,9 @@ PostApprovalHTML <- function(id_post,
   # Pretty names - type of post
   type_post <- 
     plyr::mapvalues(type_post,
-                    from = c("jobs", "services", "upcycle"),
+                    from = c("jobs", "services", "upcycle", "mix"),
                     c("Job opportunities", "Offer your services",
-                      "Upcycle and donate"),
+                      "Upcycle and donate", "Miscellaneous"),
                     warn_missing = FALSE)
   
   # Create custom HTML doc
@@ -340,11 +341,7 @@ PostApprovalHTML <- function(id_post,
           ),
           hr(),
           p(strong("Social Ministry Team")),
-          tags$img(
-            src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
-            width = 200,
-            height = 50
-          )
+          tags$img(src = ibc_logo_url, width = 200, height = 50)
         )
       )
     )

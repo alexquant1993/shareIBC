@@ -41,6 +41,13 @@ mod_post_ui <- function(id){
             "Upcycle and donate",
             "gift_fill"
           )
+        ),
+        f7ListItem(
+          mod_post_tabs_ui(
+            ns("mix"),
+            "Miscellaneous",
+            "burst_fill"
+          )
         )
       )
     )
@@ -62,6 +69,8 @@ mod_post_server <- function(id){
     mod_post_tabs_server("jobs")
     mod_post_tabs_server("services")
     mod_post_tabs_server("upcycle")
+    mod_post_tabs_server("mix")
+    
   })
 }
 

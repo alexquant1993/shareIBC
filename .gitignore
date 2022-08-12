@@ -47,3 +47,7 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+# Secrets files and credentials
+inst/.secrets/
+inst/app/json/shareibc.json

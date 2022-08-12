@@ -20,7 +20,7 @@ helpPopup <- function(content) {
   shiny::a(href = "#",
            class = "tooltip-init",
            `data-tooltip` = content,
-           shiny::icon("question-circle")
+           shiny::icon("circle-question")
   )
 }
 

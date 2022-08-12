@@ -154,6 +154,28 @@ mod_post_tabs_server <- function(id){
           ),
           tags$p("*Mandatory fields", style = "color:red;")
         )
+      } else if (id == "mix"){
+        f7Block(
+          strong(f7BlockHeader("Miscellaneous")),
+          "You can put anything here that doesn't fall into the categories
+          above, here are some examples:",
+          tags$ul(
+            tags$li(
+              "Are you interested in joining a small group or connecting with
+              other Christians your age?"
+            ),
+            tags$li(
+              "Are you looking for a roommate or an apartment to rent?"
+            ),
+            tags$li(
+              "Are you looking for someone to play football or
+              paddle on weekends?"
+            )
+          ),
+          "Please do not use this service to pursue romantic interests, this is
+          not the purpuse of this app.",
+          tags$p("*Mandatory fields", style = "color:red;")
+        )
       }
     })
     

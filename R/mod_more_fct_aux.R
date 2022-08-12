@@ -33,6 +33,7 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
           dt_index$ACTIVE_JOBS <- "jobs" %in% mailing_lists
           dt_index$ACTIVE_SERVICES <- "services" %in% mailing_lists
           dt_index$ACTIVE_UPCYCLE <- "upcycle" %in% mailing_lists
+          dt_index$ACTIVE_MIX <- "mix" %in% mailing_lists
           dt_index$LAST_ACTIVITY <- time_stamp
           # Update entry
           row <- index + 1
@@ -58,6 +59,7 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
               ACTIVE_JOBS = "jobs" %in% mailing_lists,
               ACTIVE_SERVICES = "services" %in% mailing_lists,
               ACTIVE_UPCYCLE = "upcycle" %in% mailing_lists,
+              ACTIVE_MIX = "mix" %in% mailing_lists,
               FIRST_ACTIVITY = time_stamp,
               LAST_ACTIVITY = time_stamp
             )
@@ -70,7 +72,7 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
         message <- 
           gm_mime() %>% 
           gm_to(paste(name, email)) %>% 
-          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_from(gmail_account) %>% 
           gm_subject("Subscription confirmation") %>% 
           gm_html_body(
             paste(
@@ -114,9 +116,9 @@ SubscriptionHTML <- function(mailing_lists){
   # Map values to a readable format
   mailing_lists <- 
     plyr::mapvalues(mailing_lists,
-                    from = c("jobs", "services", "upcycle"),
+                    from = c("jobs", "services", "upcycle", "mix"),
                     c("Job opportunities", "Offer your services",
-                      "Upcycle and Donate"),
+                      "Upcycle and Donate", "Miscellaneous"),
                     warn_missing = FALSE)
   # Create HTML report
   doc_subs <- 
@@ -138,11 +140,7 @@ SubscriptionHTML <- function(mailing_lists){
         tags$p('Thank you so much for being part of the IBC community!'),
         tags$hr(),
         tags$p(tags$strong("Social Ministry Team")),
-        tags$img(
-          src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
-          width = 200,
-          height = 50
-        )
+        tags$img(src = ibc_logo_url, width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/page_subs.html"))
@@ -196,6 +194,9 @@ UnsubscribeEmail <- function(email, mailing_lists, session){
         if ("services" %in% mailing_lists) {
           dt_index$ACTIVE_UPCYCLE <- FALSE
         }
+        if ("mix" %in% mailing_lists) {
+          dt_index$ACTIVE_MIX <- FALSE
+        }
         dt_index$LAST_ACTIVITY <- as.character(Sys.time())
         # Update entry
         row <- index + 1
@@ -215,7 +216,7 @@ UnsubscribeEmail <- function(email, mailing_lists, session){
         message <- 
           gm_mime() %>% 
           gm_to(email) %>% 
-          gm_from("Social Ministry IBC <jobs.ibcmadrid@gmail.com>") %>% 
+          gm_from(gmail_account) %>% 
           gm_subject("Unsubscription confirmation") %>% 
           gm_html_body(
             paste(
@@ -259,9 +260,9 @@ UnsubscriptionHTML <- function(mailing_lists){
   # Map values to a readable format
   mailing_lists <- 
     plyr::mapvalues(mailing_lists,
-                    from = c("jobs", "services", "upcycle"),
+                    from = c("jobs", "services", "upcycle", "mix"),
                     c("Job opportunities", "Offer your services",
-                      "Upcycle and Donate"),
+                      "Upcycle and Donate", "Miscellaneous"),
                     warn_missing = FALSE)
   # Create HTML report
   doc_unsubs <- 
@@ -283,11 +284,7 @@ UnsubscriptionHTML <- function(mailing_lists){
         tags$p('Thank you so much for being part of the IBC community!'),
         tags$hr(),
         tags$p(tags$strong("Social Ministry Team")),
-        tags$img(
-          src = "https://lh3.googleusercontent.com/d/1NYp9t0PuytBXQrQs_oI8t6XqS3hHye7G",
-          width = 200,
-          height = 50
-        )
+        tags$img(src = ibc_logo_url, width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/page_unsubs.html"))

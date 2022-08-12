@@ -37,7 +37,7 @@ golem::add_module( name = "post_tabs") # Name of the module
 golem::add_module( name = "share_panel" ) # Name of the module
 golem::add_module( name = "request" ) # Name of the module
 golem::add_module( name = "about" ) # Name of the module
-golem::add_module( name = "info" ) # Name of the module
+golem::add_module( name = "more" ) # Name of the module
 golem::add_module( name = "approval", fct = "aux") # Name of the module
 
 

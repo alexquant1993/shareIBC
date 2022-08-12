@@ -36,6 +36,12 @@ mod_share_ui <- function(id){
         "Upcycle",
         "gift_fill",
         "Upcycle and Donate"
+      ),
+      mod_share_tabs_ui(
+        ns("mix"),
+        "Miscellaneous",
+        "burst_fill",
+        "Miscellaneous"
       )
     )
   )
@@ -51,11 +57,14 @@ mod_share_server <- function(id){
     dt_jobs <- ls_posts$jobs
     dt_services <- ls_posts$services
     dt_upcycle <- ls_posts$upcycle
+    dt_mix <- ls_posts$mix
     
     # Posts tabs server side
     mod_share_tabs_server("jobs", dt_jobs)
     mod_share_tabs_server("services", dt_services)
     mod_share_tabs_server("upcycle", dt_upcycle)
+    mod_share_tabs_server("mix", dt_mix)
+    
   })
 }
 

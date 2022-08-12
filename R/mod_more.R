@@ -38,8 +38,7 @@ mod_more_ui <- function(id){
           tags$p(
             "For more information, please visit the",
             tags$a(
-              href = "https://ibcmadrid.com/",
-              class = "link external",
+              href = ibc_url, class = "link external",
               "official church's website."
             )
           )
@@ -93,7 +92,8 @@ mod_more_server <- function(id){
             label = "Choose the mailing list(s) you want to subscribe:",
             choices = c("Job opportunities" = "jobs",
                         "Offer your services" = "services",
-                        "Upcycle and donate" = "upcycle")
+                        "Upcycle and donate" = "upcycle",
+                        "Miscellaneous" = "mix")
           ),
           br(),
           f7Button(
@@ -120,7 +120,8 @@ mod_more_server <- function(id){
             label = "Choose the mailing list(s) you want to unsubscribe:",
             choices = c("Job opportunities" = "jobs",
                         "Offer your services" = "services",
-                        "Upcycle and donate" = "upcycle")
+                        "Upcycle and donate" = "upcycle",
+                        "Miscellaneous" = "mix")
           ),
           br(),
           f7Button(

@@ -20,7 +20,7 @@ app_ui <- function(request) {
         pullToRefresh = TRUE
       ),
       # Waiting background before the UI is ready to be shown
-      waiter::waiter_preloader(
+      waiter::waiterPreloader(
         html = waiter::spin_1(),
         color = "#D14D42",
         image = "www/IBC_logo_intro2.png",
@@ -83,7 +83,7 @@ golem_add_external_resources <- function(){
     ),
     # Add here other external resources
     shinyjs::useShinyjs(),
-    waiter::use_waiter()
+    waiter::useWaiter()
     # for example, you can add shinyalert::useShinyalert() 
   )
 }

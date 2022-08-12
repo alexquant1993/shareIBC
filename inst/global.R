@@ -16,5 +16,9 @@ gmailr::gm_auth_configure(path = json_path)
 # gmailr::gm_auth(cache = secrets_path)
 gmailr::gm_auth(cache = secrets_path, email = TRUE)
 
-# App URL
+# App data
 app_url <- "http://127.0.0.1:3838"
+gmail_account <- "Share IBC <share.ibcmadrid@gmail.com>"
+ibc_url <- "https://ibcmadrid.com/"
+ibc_building_url <- "https://lh3.googleusercontent.com/d/1nbW-IYdtXoqzBosvgMmR5MY1Ij4faZph"
+ibc_logo_url <- "https://lh3.googleusercontent.com/d/1-ojsCffeIsTovPBTBC_SKPP8CL76SoHL"

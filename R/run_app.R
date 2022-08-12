@@ -10,6 +10,7 @@ run_app <- function(
   onStart = NULL,
   options = list(), 
   enableBookmarking = NULL,
+  uiPattern = "/",
   ...
 ) {
   source(system.file("global.R", package = "shareIBC"))
@@ -19,7 +20,8 @@ run_app <- function(
       server = app_server,
       onStart = onStart,
       options = options, 
-      enableBookmarking = enableBookmarking
+      enableBookmarking = enableBookmarking,
+      uiPattern = uiPattern
     ), 
     golem_opts = list(...)
   )
