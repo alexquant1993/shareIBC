@@ -15,7 +15,7 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
   tryCatch(
     {
       # Load mailing list database
-      wb <- drive_get("mailing_list/DT_MAILING_LIST")
+      wb <- drive_get(get_golem_config("mailing_list_path"))
       dt <- read_sheet(wb)
       
       # Check if email is valid
@@ -30,10 +30,18 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
           # Update preferences for an existing entry
           index <- which(dt$EMAIL == email)
           dt_index <- dt[index, ]
-          dt_index$ACTIVE_JOBS <- "jobs" %in% mailing_lists
-          dt_index$ACTIVE_SERVICES <- "services" %in% mailing_lists
-          dt_index$ACTIVE_UPCYCLE <- "upcycle" %in% mailing_lists
-          dt_index$ACTIVE_MIX <- "mix" %in% mailing_lists
+          if (!dt_index$ACTIVE_JOBS) {
+            dt_index$ACTIVE_JOBS <- "jobs" %in% mailing_lists
+          }
+          if (!dt_index$ACTIVE_SERVICES) {
+            dt_index$ACTIVE_SERVICES <- "services" %in% mailing_lists
+          }
+          if (!dt_index$ACTIVE_UPCYCLE) {
+            dt_index$ACTIVE_UPCYCLE <- "upcycle" %in% mailing_lists
+          }
+          if (!dt_index$ACTIVE_MIX) {
+            dt_index$ACTIVE_MIX <- "mix" %in% mailing_lists
+          }
           dt_index$LAST_ACTIVITY <- time_stamp
           # Update entry
           row <- index + 1
@@ -72,7 +80,7 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
         message <- 
           gm_mime() %>% 
           gm_to(paste(name, email)) %>% 
-          gm_from(gmail_account) %>% 
+          gm_from(get_gmail_account()) %>% 
           gm_subject("Subscription confirmation") %>% 
           gm_html_body(
             paste(
@@ -140,7 +148,9 @@ SubscriptionHTML <- function(mailing_lists){
         tags$p('Thank you so much for being part of the IBC community!'),
         tags$hr(),
         tags$p(tags$strong("Social Ministry Team")),
-        tags$img(src = ibc_logo_url, width = 200, height = 50)
+        tags$img(
+          src = get_golem_config("ibc_logo_url"),
+          width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/page_subs.html"))
@@ -150,13 +160,25 @@ SubscriptionHTML <- function(mailing_lists){
 
 #' Checks the validity of an email input
 #' @param x string, email input
+#' @noRd
 is_valid_email <- function(x) {
   grepl(
-    "\\<[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}\\>",
+    "^\\s*[A-Z0-9._%&'*+`/=?^{}~-]+@[A-Z0-9.-]+\\.[A-Z0-9]{2,}\\s*$",
     as.character(x),
     ignore.case = TRUE
   )
 }
+
+#' Get gmail account - pretty name
+#' @noRd
+get_gmail_account <- function(pretty = TRUE) {
+  out <- get_golem_config("gmail_account")
+  if (pretty) {
+    out <- paste0(get_golem_config("golem_name"), " <", out, ">")
+  }
+  return(out)
+}
+
 
 #' Adds a new entry to the subscription list
 #' @description  Adds a new entry to the googlesheets where the subscription list is located
@@ -175,7 +197,7 @@ UnsubscribeEmail <- function(email, mailing_lists, session){
   tryCatch(
     {
       # Load mailing list database
-      wb <- drive_get("mailing_list/DT_MAILING_LIST")
+      wb <- drive_get(get_golem_config("mailing_list_path"))
       dt <- read_sheet(wb)
       email <- paste0("<", email, ">")
       
@@ -216,7 +238,7 @@ UnsubscribeEmail <- function(email, mailing_lists, session){
         message <- 
           gm_mime() %>% 
           gm_to(email) %>% 
-          gm_from(gmail_account) %>% 
+          gm_from(get_gmail_account()) %>% 
           gm_subject("Unsubscription confirmation") %>% 
           gm_html_body(
             paste(
@@ -284,11 +306,12 @@ UnsubscriptionHTML <- function(mailing_lists){
         tags$p('Thank you so much for being part of the IBC community!'),
         tags$hr(),
         tags$p(tags$strong("Social Ministry Team")),
-        tags$img(src = ibc_logo_url, width = 200, height = 50)
+        tags$img(
+          src = get_golem_config("ibc_logo_url"),
+          width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/page_unsubs.html"))
   writeLines(as.character(doc_unsubs), fileConn)
   close(fileConn)
 }
-  

@@ -14,7 +14,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
     {
       print("Reading googlesheets database...")
       # Pull post information from database
-      wb <- drive_get("posts/DT_POSTS")
+      wb <- drive_get(get_golem_config("posts_path"))
       dt <- read_sheet(wb, sheet = "DATABASE")
       dt_post <- dt[dt$ID_POST == id_request, ]
       
@@ -26,7 +26,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
         message <- 
           gm_mime() %>% 
           gm_to(dt_post$EMAIL_POSTER) %>% 
-          gm_from(gmail_account) %>% 
+          gm_from(get_gmail_account()) %>% 
           gm_subject(paste("Post approval confirmation with ID code", id_request)) %>% 
           gm_html_body(
             paste(
@@ -40,7 +40,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
         print("HTML creation of the approved post...")
         ApprovedPostHTML(dt_post)
         print("Getting current mailing list...")
-        wb_ml <- drive_get("mailing_list/DT_MAILING_LIST")
+        wb_ml <- drive_get(get_golem_config("mailing_list_path"))
         dt_ml <- read_sheet(wb_ml, sheet = "DATABASE")
         if (dt_post$TYPE_POST == "jobs") {
           mailing_list <- dt_ml[dt_ml$ACTIVE_JOBS, ]$EMAIL
@@ -56,7 +56,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
         message <- 
           gm_mime() %>% 
           gm_bcc(mailing_list) %>% 
-          gm_from(gmail_account) %>% 
+          gm_from(get_gmail_account()) %>% 
           gm_subject("Share IBC Update!") %>% 
           gm_html_body(
             paste(
@@ -160,7 +160,7 @@ ConfirmationPostHTML <- function(id_request){
         p('Thank you so much for being part of the IBC community!'),
         hr(),
         p(strong("Social Ministry Team")),
-        tags$img(src = ibc_logo_url, width = 200, height = 50)
+        tags$img(src = get_golem_config("ibc_logo_url"), width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/confirmation_post.html"))
@@ -283,12 +283,17 @@ ApprovedPostHTML <- function(dt_post){
             tags$p(
               "If you wish to unsubscribe from our mailing lists,
               you can do so by accessing our",
-              tags$a(href = paste0(app_url, "/?unsubscribe=TRUE"),
-                     "SHARE IBC app.")
+              tags$a(
+                href = 
+                  paste0(get_golem_config("app_url"), "/?unsubscribe=TRUE"),
+                "SHARE IBC app."
+              )
             ),
             p('Thank you so much for being part of the IBC community!'),
             tags$p(tags$strong("Social Ministry Team")),
-            tags$img(src = ibc_logo_url, width = 200, height = 50)
+            tags$img(
+              src = get_golem_config("ibc_logo_url"),
+              width = 200, height = 50)
           )
         )
       )
@@ -313,7 +318,7 @@ RejectPost <- function(id_request, id_approver, comment, session){
   tryCatch(
     {
       # Pull post information from database
-      wb <- drive_get("posts/DT_POSTS")
+      wb <- drive_get(get_golem_config("posts_path"))
       dt <- read_sheet(wb, sheet = "DATABASE")
       dt_post <- dt[dt$ID_POST == id_request, ]
       
@@ -325,7 +330,7 @@ RejectPost <- function(id_request, id_approver, comment, session){
         message <- 
           gm_mime() %>% 
           gm_to(dt_post$EMAIL_POSTER) %>% 
-          gm_from(gmail_account) %>% 
+          gm_from(get_gmail_account()) %>% 
           gm_subject(paste("Post rejection notification with ID code", id_request)) %>% 
           gm_html_body(
             paste(
@@ -396,7 +401,9 @@ RejectionPostHTML <- function(id_request, comment){
         p('Thank you so much for being part of the IBC community!'),
         hr(),
         p(strong("Social Ministry Team")),
-        tags$img(src = ibc_logo_url, width = 200, height = 50)
+        tags$img(
+          src = get_golem_config("ibc_logo_url"),
+          width = 200, height = 50)
       )
     )
   fileConn <- file(app_sys("app/messages/rejected_post.html"))

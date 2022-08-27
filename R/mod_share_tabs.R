@@ -70,7 +70,6 @@ mod_share_tabs_server <- function(id, dt_posts){
           f7Post(
             subject = subject,
             date = date,
-            type = type,
             content = description,
             footer = footer
           )
@@ -104,7 +103,7 @@ mod_share_tabs_server <- function(id, dt_posts){
             # to prevent an error of Framework7 (Photo Browser doesn't work with
             # more than one picture).
             if (length(files_url) == 1) {
-              files_url <- c(files_url, ibc_building_url)
+              files_url <- c(files_url, get_golem_config("ibc_building_url"))
             }
             
             # Toggle photo browser

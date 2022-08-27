@@ -1,18 +1,13 @@
 #' Function to create UI posts given inputs
 #' @param subject post brief description
 #' @param date date of the post
-#' @param type type of post, it can take any of the following:
-#'  c('jobs', 'services', 'upcycle', 'mix')
+
 #' @param content post description and details
 #' @param footer Footer content, if any. Must be wrapped in a tagList
 f7Post <- function(subject,
                    date,
-                   type = c("jobs", "services", "upcycle", "mix"),
                    content,
                    footer = NULL){
-  # Input validation
-  type = match.arg(type)
-  
   # Post header UI
   headerTag <-
     shiny::tags$div(
@@ -47,7 +42,7 @@ f7Post <- function(subject,
 #' @noRd
 GetPostData <- function(){
   # Access googlesheets file
-  wb_posts <- drive_get("posts/DT_POSTS")
+  wb_posts <- drive_get(get_golem_config("posts_path"))
   dt_posts <- read_sheet(wb_posts, sheet = 'DATABASE')
   dt_posts$DATE_POST <- as.Date(dt_posts$DATE_POST)
   

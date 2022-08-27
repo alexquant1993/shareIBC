@@ -24,9 +24,10 @@ usethis::use_package( "googlesheets4" )
 usethis::use_package( "stringr" )
 usethis::use_package( "waiter" )
 usethis::use_package( "httr" )
-
-
-
+usethis::use_package("shinipsum", type = "Suggests")
+usethis::use_package("charlatan", type = "Suggests")
+usethis::use_package("digest", type = "Suggests")
+usethis::use_package("shinytest2", type = "Suggests")
 
 ## Add modules ----
 ## Create a module infrastructure in R/
@@ -44,7 +45,7 @@ golem::add_module( name = "approval", fct = "aux") # Name of the module
 
 ## Add helper functions ----
 ## Creates ftc_* and utils_*
-golem::add_fct( "subscribe" )
+golem::add_fct( "api_connection" )
 golem::add_fct("post")
 golem::add_utils( "helpers" )
 
@@ -60,7 +61,8 @@ usethis::use_data_raw( name = "my_dataset", open = FALSE )
 
 ## Tests ----
 ## Add one line by test you want to create
-usethis::use_test( "app" )
+usethis::use_test("subscription")
+usethis::use_test("share_tab")
 
 # Documentation
 

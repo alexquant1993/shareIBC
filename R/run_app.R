@@ -1,5 +1,7 @@
 #' Run the Shiny Application
 #'
+#' @param env type of environment to run the application. It can take the
+#' following values: "default" and "production"
 #' @param ... arguments to pass to golem_opts
 #' @inheritParams shiny::shinyApp
 #'
@@ -7,18 +9,17 @@
 #' @importFrom shiny shinyApp
 #' @importFrom golem with_golem_options
 run_app <- function(
-  onStart = NULL,
-  options = list(), 
-  enableBookmarking = NULL,
-  uiPattern = "/",
-  ...
+    env = c("default", "production"),
+    options = list(), 
+    enableBookmarking = NULL,
+    uiPattern = "/",
+    ...
 ) {
-  source(system.file("global.R", package = "shareIBC"))
   with_golem_options(
     app = shinyApp(
       ui = app_ui,
       server = app_server,
-      onStart = onStart,
+      onStart = ApiConnections(env),
       options = options, 
       enableBookmarking = enableBookmarking,
       uiPattern = uiPattern

@@ -18,63 +18,10 @@ mod_more_ui <- function(id){
       f7AccordionItem(
         title = "Subscribe",
         f7Card(
-          title = strong(textOutput(ns("title_subscriptionUI"))),
-          uiOutput(ns("subscriptionUI")),
-          br(),
-          f7Toggle(
-            inputId = ns("unsubscribe"),
-            label = "Unsubscribe?",
-            checked = FALSE
-          )
-        )
-      ),
-      f7AccordionItem(
-        title = "Contact us",
-        f7Block(
-          tags$p(
-            "Please contact us by sending an email to",
-            tags$a(href = "", "socialministry@ibcmadrid.com.")
-          ),
-          tags$p(
-            "For more information, please visit the",
-            tags$a(
-              href = ibc_url, class = "link external",
-              "official church's website."
-            )
-          )
-        )
-      ),
-      f7AccordionItem(
-        title = "About this app",
-        app_sys('app/more_html/howto.html') %>%
-          includeHTML() %>% f7Block()
-      )
-    )
-  )
-}
-
-#' info Server Functions
-#'
-#' @noRd 
-mod_more_server <- function(id){
-  moduleServer( id, function(input, output, session){
-    ns <- session$ns
-    # Reactive title
-    output$title_subscriptionUI <- renderText({
-      if (!input$unsubscribe) {
-        "Subscribe to Share IBC Mailing List"
-      } else {
-        "Unsubscribe to Share IBC Mailing List"
-      }
-    })
-    
-    # Reactive UI
-    output$subscriptionUI <- renderUI({
-      # Subscription server side
-      if (!input$unsubscribe) {
-        tagList(
-          "The objective of Share IBC is to help members of IBC and those within
-          our community to get connected and share different opportunities.",
+          title = strong("Subscribe to Share IBC Mailing List"),
+          "The objective of Share IBC is to help members of IBC and those
+            within our community to get connected and share different
+            opportunities.",
           tags$p("*Mandatory fields", style = "color:red;"),
           f7Text(
             inputId = ns("name_subs"),
@@ -96,16 +43,17 @@ mod_more_server <- function(id){
                         "Miscellaneous" = "mix")
           ),
           br(),
-          f7Button(
+          actionButton(
             inputId = ns("subscribeBtn"),
             label = "Subscribe",
-            rounded = TRUE,
-            size = "small"
+            class = "button button-fill button-round button-small"
           )
         )
-      } else {
-        # Unsubscription server side
-        tagList(
+      ),
+      f7AccordionItem(
+        title = "Unsubscribe",
+        f7Card(
+          title = strong("Unsubscribe to Share IBC Mailing List"),
           "Thank you so much for being part of our community.
           We hope to see you soon!",
           tags$p("*Mandatory fields", style = "color:red;"),
@@ -124,28 +72,59 @@ mod_more_server <- function(id){
                         "Miscellaneous" = "mix")
           ),
           br(),
-          f7Button(
+          actionButton(
             inputId = ns("unsubscribeBtn"),
             label = "Unsubscribe",
-            rounded = TRUE,
-            size = "small"
+            class = "button button-fill button-round button-small"
           )
         )
-      }
-    })
+      ),
+      f7AccordionItem(
+        title = "Contact us",
+        f7Block(
+          tags$p(
+            "Please contact us by sending an email to",
+            tags$a(href = "", "socialministry@ibcmadrid.com.")
+          ),
+          tags$p(
+            "For more information, please visit the",
+            tags$a(
+              href = get_golem_config("ibc_url"), class = "link external",
+              "official church's website."
+            )
+          )
+        )
+      ),
+      f7AccordionItem(
+        title = "About this app",
+        app_sys('app/more_html/howto.html') %>%
+          includeHTML() %>% f7Block()
+      )
+    )
+  )
+}
+
+#' info Server Functions
+#'
+#' @noRd 
+mod_more_server <- function(id){
+  moduleServer( id, function(input, output, session){
+    ns <- session$ns
     
     # Subscription process (send confirmation email)
     observeEvent(input$subscribeBtn, {
       # User-experience stuff
       shinyjs::disable("subscribeBtn")
+      # waiter::waiter_show(html = waiter::spin_1())
       showF7Preloader(color = "blue")
       on.exit({
         shinyjs::enable("subscribeBtn")
+        # waiter::waiter_hide()
         hideF7Preloader()
       })
-      
+
       # Add email to selected mailing lists and send confirmation email
-      check_subs <- 
+      check_subs <-
         SubscribeEmail(
           name = input$name_subs,
           email = input$email_subs,
@@ -158,7 +137,7 @@ mod_more_server <- function(id){
         updateF7Text("email_subs", value = "")
         # Uncheck all boxes
         shinyjs::runjs(
-          "    
+          "
           function uncheckAll() {
             var inputs = document.querySelectorAll('.checkbox_group');
             for (var i = 0; i < inputs.length; i++) {
@@ -170,18 +149,18 @@ mod_more_server <- function(id){
         )
         # Succsessful operation
         f7Dialog(
-          session = session,
           title = "Done",
           text = "You have successfully updated your preferences!",
-          type = "alert"
+          type = "alert",
+          session = session
         )
       } else {
         # Unsuccsesful operation
         f7Dialog(
-          session = session,
           title = "Error",
           text = check_subs$Ops.error,
-          type = "alert"
+          type = "alert",
+          session = session
         )
       }
     })
@@ -220,18 +199,18 @@ mod_more_server <- function(id){
         )
         # Succsessful operation
         f7Dialog(
-          session = session,
           title = "Done",
           text = "You have successfully updated your preferences!",
-          type = "alert"
+          type = "alert",
+          session = session
         )
       } else {
         # Unsuccsesful operation
         f7Dialog(
-          session = session,
           title = "Error",
-          text = check_subs$Ops.error,
-          type = "alert"
+          text = check_unsubs$Ops.error,
+          type = "alert",
+          session = session
         )
       }
     })

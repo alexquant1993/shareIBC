@@ -32,7 +32,7 @@ UploadPost <- function(name_poster,
     {
       # Read googlesheets' tables
       print("Reading googlesheets database...")
-      wb <- drive_get("posts/DT_POSTS")
+      wb <- drive_get(get_golem_config("posts_path"))
       dt_approvers <- read_sheet(wb, sheet = "APPROVERS")
       dt <- read_sheet(wb, sheet = "DATABASE")
       
@@ -53,11 +53,11 @@ UploadPost <- function(name_poster,
         # Store uploaded files, if any
         if (isTruthy(files_tmp)) {
           print("Creating folder to store images of the post...")
-          if (!(id_post %in% drive_ls("posts")$name)) {
-            drive_directory <- paste0("posts/", id_post)
-          } else {
+          drive_directory <- 
+            paste0(dirname(get_golem_config("posts_path")), "/", id_post)
+          if (id_post %in% drive_ls("posts")$name) {
             # Create aux name when there is already a folder name with the id_post
-            drive_directory <- paste0("posts/", id_post, "_", sample(1:100, 1))
+            drive_directory <- paste0(drive_directory, "_", sample(1:100, 1))
           }
           drive_mkdir(drive_directory)
           # Beautify files path
@@ -119,7 +119,7 @@ UploadPost <- function(name_poster,
           message <- 
             gm_mime() %>% 
             gm_to(dt_approvers$EMAIL[j]) %>% 
-            gm_from(gmail_account) %>% 
+            gm_from(get_gmail_account()) %>% 
             gm_subject("A New Request Requires Your Approval!") %>% 
             gm_html_body(
               paste(
@@ -329,7 +329,7 @@ PostApprovalHTML <- function(id_post,
                 target = "_blank",
                 href = 
                   paste0(
-                    app_url,
+                    get_golem_config("app_url"),
                     "/?tab=approval&id_request=",
                     id_post,
                     "&id_approver=",
@@ -341,7 +341,9 @@ PostApprovalHTML <- function(id_post,
           ),
           hr(),
           p(strong("Social Ministry Team")),
-          tags$img(src = ibc_logo_url, width = 200, height = 50)
+          tags$img(
+            src = get_golem_config("ibc_logo_url"),
+            width = 200, height = 50)
         )
       )
     )

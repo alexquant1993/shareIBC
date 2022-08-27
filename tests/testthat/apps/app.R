@@ -1,0 +1,5 @@
+library(shareIBC)
+library(shiny)
+options(shiny.testmode = TRUE)
+shareIBC:::ApiConnections("default")
+shinyApp(shareIBC:::app_ui(), shareIBC:::app_server)

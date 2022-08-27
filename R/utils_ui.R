@@ -187,7 +187,8 @@ formCheckBoxGroup <- function (inputId, label, choices = NULL, selected = NULL) 
     shiny::tags$div(
       class = "item-title",
       label
-    ), 
+    ),
+    br(),
     shiny::tags$div(
       class = "list shiny-input-checkboxgroup", 
       id = inputId,
