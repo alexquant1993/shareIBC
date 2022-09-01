@@ -4,7 +4,7 @@
 \alias{RejectPost}
 \title{Sends rejection mail to the poster with the corresponding explanation}
 \usage{
-RejectPost(id_request, id_approver, comment)
+RejectPost(id_request, id_approver, comment, session)
 }
 \arguments{
 \item{id_request}{string, id of the request}
@@ -12,6 +12,8 @@ RejectPost(id_request, id_approver, comment)
 \item{id_approver}{string, id of the post approver}
 
 \item{comment}{string, comments related to the post rejection}
+
+\item{session}{shiny session}
 }
 \description{
 Sends rejection mail to the poster with the corresponding explanation

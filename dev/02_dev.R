@@ -26,7 +26,6 @@ usethis::use_package( "waiter" )
 usethis::use_package( "httr" )
 usethis::use_package("shinipsum", type = "Suggests")
 usethis::use_package("charlatan", type = "Suggests")
-usethis::use_package("digest", type = "Suggests")
 usethis::use_package("shinytest2", type = "Suggests")
 
 ## Add modules ----
@@ -63,6 +62,7 @@ usethis::use_data_raw( name = "my_dataset", open = FALSE )
 ## Add one line by test you want to create
 usethis::use_test("subscription")
 usethis::use_test("share_tab")
+usethis::use_test("approval")
 
 # Documentation
 

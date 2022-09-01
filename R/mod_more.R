@@ -111,15 +111,40 @@ mod_more_server <- function(id){
   moduleServer( id, function(input, output, session){
     ns <- session$ns
     
+    # Redirect to unsubscribe tab, if requested
+    observe({
+      query <- parseQueryString(session$clientData$url_search)
+      req(query[['unsubscribe']])
+      if (query[['unsubscribe']] == 'TRUE') {
+        # Open More tab
+        shinyjs::runjs("app.tab.show('#main_tabset-More');")
+        # Open accordion item in the Subscribe tab
+        # Number 1, because it is the second accordion item
+        shinyjs::runjs(
+          "var item = $('#more_ui-more_accordion .accordion-item')[1];
+           app.accordion.toggle($(item));"
+        )
+      }
+    })
+    
+    # Enable buttons when all mandatory fields are filled out
+    observe({
+      shinyjs::toggleState(
+        id = "subscribeBtn",
+        isTruthy(input$name_subs) & isTruthy(input$email_subs)
+        & isTruthy(input$ml_subs))
+      shinyjs::toggleState(
+        id = "unsubscribeBtn",
+        isTruthy(input$email_unsubs) & isTruthy(input$ml_unsubs))
+    })
+    
     # Subscription process (send confirmation email)
     observeEvent(input$subscribeBtn, {
       # User-experience stuff
       shinyjs::disable("subscribeBtn")
-      # waiter::waiter_show(html = waiter::spin_1())
       showF7Preloader(color = "blue")
       on.exit({
         shinyjs::enable("subscribeBtn")
-        # waiter::waiter_hide()
         hideF7Preloader()
       })
 
@@ -213,17 +238,6 @@ mod_more_server <- function(id){
           session = session
         )
       }
-    })
-    
-    # Enable buttons when all mandatory fields are filled out
-    observe({
-      shinyjs::toggleState(
-        id = "subscribeBtn",
-        isTruthy(input$name_subs) & isTruthy(input$email_subs)
-        & isTruthy(input$ml_subs))
-      shinyjs::toggleState(
-        id = "unsubscribeBtn",
-        isTruthy(input$email_unsubs) & isTruthy(input$ml_unsubs))
     })
   })
 }

@@ -15,8 +15,8 @@ app_server <- function( input, output, session ) {
   mod_approval_server("approval_ui")
   
   # Show search and post buttons just in the share tab
-  observeEvent(input[["approval_ui-main_tabset"]], {
-    if (input[["approval_ui-main_tabset"]] == "Share") {
+  observeEvent(input[["main_tabset"]], {
+    if (input[["main_tabset"]] == "Share") {
       # Add page-with-subnavbar class to show subnavbar panel
       shinyjs::runjs(
         "var element = document.querySelector('.page');

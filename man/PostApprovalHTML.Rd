@@ -8,7 +8,7 @@ PostApprovalHTML(
   id_post,
   name_poster,
   email_poster,
-  type_post = c("jobs", "services", "upcycle"),
+  type_post = c("jobs", "services", "upcycle", "mix"),
   subject,
   description,
   contact_email,
@@ -23,7 +23,7 @@ PostApprovalHTML(
 
 \item{email_poster}{string, email of the poster}
 
-\item{type_post}{string, type of post. It can be "jobs" or "services"}
+\item{type_post}{string, type of post.}
 
 \item{subject}{string, subject of the post}
 

@@ -9,7 +9,8 @@ gm_attach_url(mime, description)
 \arguments{
 \item{mime}{message}
 
-\item{description}{complete URL including scheme (such as http://, https://, ftp:// or file://)}
+\item{description}{complete URL including scheme 
+(such as http://, https://, ftp:// or file://)}
 }
 \description{
 Auxiliary function to attach files from URL to message - gmailr package

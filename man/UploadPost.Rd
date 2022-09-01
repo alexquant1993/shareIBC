@@ -7,13 +7,14 @@
 UploadPost(
   name_poster,
   email_poster,
-  type_post = c("jobs", "services", "upcycle"),
+  type_post = c("jobs", "services", "upcycle", "mix"),
   subject,
   description,
   contact_email,
   contact_phone,
   files_tmp,
-  gdpr_acceptance
+  gdpr_acceptance,
+  session
 )
 }
 \arguments{
@@ -21,7 +22,8 @@ UploadPost(
 
 \item{email_poster}{string, email of the poster}
 
-\item{type_post}{string, type of post. It can be "jobs", "services" or "upcycle"}
+\item{type_post}{string, type of post. It can be "jobs", "services", 
+"upcycle" or "mix"}
 
 \item{subject}{string, subject of the post}
 
@@ -31,9 +33,12 @@ UploadPost(
 
 \item{contact_phone}{string, phone number to contact about the post}
 
-\item{files_tmp}{dataframe that contains the names, sizes, MIME types and datapaths of the uploaded files}
+\item{files_tmp}{dataframe that contains the names, sizes, MIME types and
+datapaths of the uploaded files}
 
 \item{gdpr_acceptance}{boolean, whether the poster has accepted or not the}
+
+\item{session}{shiny session}
 }
 \description{
 Upload post data to Googlesheets

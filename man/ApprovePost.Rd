@@ -5,7 +5,7 @@
 \title{Send approval confirmation mail to poster and send approved post
 to the mailing list}
 \usage{
-ApprovePost(id_request, id_approver, comment)
+ApprovePost(id_request, id_approver, comment, session)
 }
 \arguments{
 \item{id_request}{string, id of the request}
@@ -13,6 +13,8 @@ ApprovePost(id_request, id_approver, comment)
 \item{id_approver}{string, id of the post approver}
 
 \item{comment}{string, comments related to the post approval}
+
+\item{session}{shiny session}
 }
 \description{
 Send approval confirmation mail to poster and send approved post

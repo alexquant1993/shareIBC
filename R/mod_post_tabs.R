@@ -12,10 +12,10 @@ mod_post_tabs_ui <- function(id, label, icon){
   ns <- NS(id)
   tagList(
     # Button that triggers the post tab
-    f7Button(
+    actionButton(
       inputId = ns("bttn_post_tab"),
       label = tagList(f7Icon(icon), label),
-      size = "large"
+      class = "button button-fill button-large"
     ),
     # Popup UI
     f7Popup(
@@ -58,10 +58,10 @@ mod_post_tabs_ui <- function(id, label, icon){
           inputId = ns("attach_post"),
           label = 
             div(strong("Attach files, if any"),
-                helpPopup('Only image files are allowed: .jpg and .png')
+                helpPopup('Only image files are allowed.')
             ),
           multiple = TRUE,
-          accept = c("image/jpeg", "image/png")
+          accept = "image/*"
         ),
         br(),
         formCheckBox(
@@ -86,10 +86,10 @@ mod_post_tabs_ui <- function(id, label, icon){
           )
         ),
         br(),
-        f7Button(
+        actionButton(
           inputId = ns("submit_post"),
           label = "Submit",
-          rounded = TRUE
+          class = "button button-fill button-round"
         )
       )
     )

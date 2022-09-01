@@ -52,38 +52,40 @@ ApprovePost <- function(id_request, id_approver, comment, session){
           mailing_list <- dt_ml[dt_ml$ACTIVE_MIX, ]$EMAIL
         }
         
-        print("Sending approved post to current mailing list...")
-        message <- 
-          gm_mime() %>% 
-          gm_bcc(mailing_list) %>% 
-          gm_from(get_gmail_account()) %>% 
-          gm_subject("Share IBC Update!") %>% 
-          gm_html_body(
-            paste(
-              readLines(app_sys("app/messages/approved_post.html")),
-              collapse = ""
+        if (length(mailing_list) >= 1) {
+          print("Sending approved post to current mailing list...")
+          message <- 
+            gm_mime() %>% 
+            gm_bcc(mailing_list) %>% 
+            gm_from(get_gmail_account()) %>% 
+            gm_subject("Share IBC Update!") %>% 
+            gm_html_body(
+              paste(
+                readLines(app_sys("app/messages/approved_post.html")),
+                collapse = ""
+              )
             )
-          )
-        # Attach pictures, when they are available in the post
-        files_id <- dt_post$FILES_URL
-        if (!is.na(files_id)) {
-          print("Attaching pictures...")
-          # Split the id files
-          files_id <- strsplit(files_id, ",", fixed = TRUE)[[1]]
-          # Get the Google Drive public URL addresses
-          files_url <-
-            sapply(
-              files_id,
-              function (x) paste0("https://lh3.googleusercontent.com/d/", x)
-            )
-          # Attach files recursively
-          if (length(files_url) > 1) {
-            for (k in 1:length(files_url)) {
-              message <- gm_attach_url(message, files_url[k])
+          # Attach pictures, when they are available in the post
+          files_id <- dt_post$FILES_URL
+          if (!is.na(files_id)) {
+            print("Attaching pictures...")
+            # Split the id files
+            files_id <- strsplit(files_id, ",", fixed = TRUE)[[1]]
+            # Get the Google Drive public URL addresses
+            files_url <-
+              sapply(
+                files_id,
+                function (x) paste0("https://lh3.googleusercontent.com/d/", x)
+              )
+            # Attach files recursively
+            if (length(files_url) >= 1) {
+              for (k in 1:length(files_url)) {
+                message <- gm_attach_url(message, files_url[k])
+              }
             }
           }
+          gm_send_message(message)
         }
-        gm_send_message(message)
         
         # Update post status to approved
         print("Updating post status to approved")
@@ -127,7 +129,8 @@ ApprovePost <- function(id_request, id_approver, comment, session){
 
 #' Auxiliary function to attach files from URL to message - gmailr package
 #' @param mime message
-#' @param description complete URL including scheme (such as http://, https://, ftp:// or file://)
+#' @param description complete URL including scheme 
+#' (such as http://, https://, ftp:// or file://)
 #' @importFrom gmailr gm_attach_part
 gm_attach_url <- function(mime, description){
   con <- url(description, "rb")
@@ -278,9 +281,13 @@ ApprovedPostHTML <- function(dt_post){
               if you have any questions or concerns about the publication,
               please contact the appropriate address provided in the publication."
             ),
-            tags$p("Please do not reply to this email as it was generated
-                    automatically and is not being monitored."),
             tags$p(
+              style = "text-align: left; padding-left: 10px; margin-bottom: 0;",
+              "Please do not reply to this email as it was generated
+               automatically and is not being monitored."
+            ),
+            tags$p(
+              style = "text-align: left; padding-left: 10px; margin-bottom: 0;",
               "If you wish to unsubscribe from our mailing lists,
               you can do so by accessing our",
               tags$a(
@@ -289,7 +296,10 @@ ApprovedPostHTML <- function(dt_post){
                 "SHARE IBC app."
               )
             ),
-            p('Thank you so much for being part of the IBC community!'),
+            p(
+              style = "text-align: left; padding-left: 10px; margin-bottom: 0;",
+              'Thank you so much for being part of the IBC community!'
+            ),
             tags$p(tags$strong("Social Ministry Team")),
             tags$img(
               src = get_golem_config("ibc_logo_url"),

@@ -24,15 +24,15 @@ mod_approval_ui <- function(id){
     f7Segment(
       rounded = TRUE,
       container = "segment",
-      f7Button(
+      actionButton(
         inputId = ns("request_approve"),
-        label = "Approve"
+        label = "Approve",
+        class = "button button-fill"
       ),
-      f7Button(
+      actionButton(
         inputId = ns("request_reject"),
-        outline = TRUE,
-        fill = FALSE,
-        label = "Reject"
+        label = "Reject",
+        class = "button button-outline"
       )
     )
   )
@@ -49,11 +49,8 @@ mod_approval_server <- function(id){
       query <- parseQueryString(session$clientData$url_search)
       req(query[['tab']])
       if (query[['tab']] == 'approval') {
-        updateF7Tabs(
-          session = session,
-          id = 'main_tabset',
-          selected = 'Approve'
-        )
+        # Open approval tab
+        shinyjs::runjs("app.tab.show('#main_tabset-Approve');")
         # Hide toolbar where the different tabs of the app are available
         shinyjs::runjs("$('.toolbar').css('visibility', 'hidden');")
       }

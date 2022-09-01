@@ -4,21 +4,12 @@
 \alias{f7Post}
 \title{Function to create UI posts given inputs}
 \usage{
-f7Post(
-  subject,
-  date,
-  type = c("jobs", "services", "upcycle"),
-  content,
-  footer = NULL
-)
+f7Post(subject, date, content, footer = NULL)
 }
 \arguments{
 \item{subject}{post brief description}
 
 \item{date}{date of the post}
-
-\item{type}{type of post, it can take any of the following:
-c('jobs', 'services', 'upcycle')}
 
 \item{content}{post description and details}
 

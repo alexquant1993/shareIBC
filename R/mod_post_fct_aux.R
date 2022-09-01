@@ -7,12 +7,15 @@
 #' @param description string, description of the post
 #' @param contact_email string, email to contact about the post
 #' @param contact_phone string, phone number to contact about the post
-#' @param files_tmp dataframe that contains the names, sizes, MIME types and datapaths of the uploaded files
+#' @param files_tmp dataframe that contains the names, sizes, MIME types and
+#'  datapaths of the uploaded files
 #' @param gdpr_acceptance boolean, whether the poster has accepted or not the
 #' @param session	shiny session
-#' @importFrom googledrive drive_get drive_mkdir drive_ls drive_upload drive_share_anyone
+#' @importFrom googledrive drive_get drive_mkdir drive_ls drive_upload 
+#' drive_share_anyone
 #' @importFrom googlesheets4 read_sheet sheet_append
-#' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body gm_attach_file gm_send_message
+#' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body
+#'  gm_attach_file gm_send_message
 UploadPost <- function(name_poster,
                        email_poster,
                        type_post = c("jobs", "services", "upcycle", "mix"),
@@ -128,7 +131,7 @@ UploadPost <- function(name_poster,
               )
             )
           # Attach files, if any
-          if (length(files_path) > 1) {
+          if (length(files_path) >= 1) {
             for (k in 1:length(files_path)) {
               message <- gm_attach_file(message, files_path[k])
             }

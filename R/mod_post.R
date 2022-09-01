@@ -10,7 +10,11 @@
 mod_post_ui <- function(id){
   ns <- NS(id)
   tagList(
-    f7Button(ns("bttn_post"), f7Icon("pencil"), size = "small"),
+    actionButton(
+      inputId = ns("bttn_post"),
+      label = f7Icon("pencil"),
+      class = "button button-fill button-small"
+    ),
     f7Popup(
       id = ns("popup_post"),
       title = "Select the type of post",

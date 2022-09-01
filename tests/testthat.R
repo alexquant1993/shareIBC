@@ -1,8 +1,9 @@
-library(testthat)
 library(shareIBC)
+library(shinytest2)
+library(testthat)
 
-# test_check("shareIBC")
-shinytest2::test_app()
+test_check("shareIBC")
+# shinytest2::test_app()
 
 # test_dir(
 #   "./testthat",
