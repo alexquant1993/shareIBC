@@ -137,7 +137,7 @@ test_that("App subscription process checkup...", {
   # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
   # Incompatibility with custom JS function
   expect_identical(
-    shareIBC:::get_inputs(
+    shareIBC:::GetInputs(
       app,
       c("more_ui-name_subs", "more_ui-email_subs",
         "more_ui-ml_subs", "more_ui-subscribeBtn")
@@ -153,7 +153,7 @@ test_that("App subscription process checkup...", {
   # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
   # Incompatibility with custom JS function
   expect_identical(
-    shareIBC:::get_inputs(
+    shareIBC:::GetInputs(
       app,
       c("more_ui-email_unsubs", "more_ui-ml_unsubs", "more_ui-unsubscribeBtn")
     ),

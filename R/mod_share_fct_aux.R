@@ -4,6 +4,7 @@
 
 #' @param content post description and details
 #' @param footer Footer content, if any. Must be wrapped in a tagList
+#' @noRd
 f7Post <- function(subject,
                    date,
                    content,

@@ -61,7 +61,7 @@ test_that("Posting workflow - send post for approval...", {
     !!paste0(post_ui, "contact_phone") := 
       charlatan::ch_phone_number(locale = "es_ES")
   )
-  app$upload_file(!!paste0(post_ui, "attach_post") := shareIBC:::random_pic())
+  app$upload_file(!!paste0(post_ui, "attach_post") := shareIBC:::RandomPic())
   app$set_inputs(!!paste0(post_ui, "check_rgpd_post") := TRUE)
   
   # Submit post for approval
@@ -69,7 +69,7 @@ test_that("Posting workflow - send post for approval...", {
   
   # Check that fields are emptied after a successful process
   expect_identical(
-    shareIBC:::get_inputs(
+    shareIBC:::GetInputs(
       app,
       paste0(
         post_ui,
@@ -104,7 +104,7 @@ test_that("Posting workflow - accept/reject post...", {
   expect_identical(dt$STATUS, "Approved")
   # Check that fields after a successful process
   expect_identical(
-    shareIBC:::get_inputs(
+    shareIBC:::GetInputs(
       app2,
       c("approval_ui-comment", "approval_ui-request_approve",
         "approval_ui-request_reject")

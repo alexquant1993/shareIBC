@@ -6,7 +6,9 @@
 #' @param session	shiny session
 #' @importFrom googledrive drive_get
 #' @importFrom googlesheets4 read_sheet range_write
-#' @importFrom gmailr gm_mime gm_to gm_bcc gm_from gm_subject gm_html_body gm_send_message
+#' @importFrom gmailr gm_mime gm_to gm_bcc gm_from gm_subject
+#'  gm_html_body gm_send_message
+#' @noRd
 ApprovePost <- function(id_request, id_approver, comment, session){
   Ops.error <- NULL
   
@@ -132,6 +134,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
 #' @param description complete URL including scheme 
 #' (such as http://, https://, ftp:// or file://)
 #' @importFrom gmailr gm_attach_part
+#' @noRd
 gm_attach_url <- function(mime, description){
   con <- url(description, "rb")
   size <- httr::HEAD(description)$headers$`content-length`
@@ -152,6 +155,7 @@ gm_attach_url <- function(mime, description){
 #' HTML file to be sent to the poster confirming that
 #' his/her post was approved.
 #' @param id_request string, id of the request
+#' @noRd
 ConfirmationPostHTML <- function(id_request){
   html_post <-
     tags$html(
@@ -175,6 +179,7 @@ ConfirmationPostHTML <- function(id_request){
 #' Create HTML report - approved post - to be sent to the mailing list
 #' @param dt_post A tibble element that contains all relevant information
 #' about the post
+#' @noRd
 ApprovedPostHTML <- function(dt_post){
   # Pretty names - type of post
   type_post <- 
@@ -321,7 +326,9 @@ ApprovedPostHTML <- function(dt_post){
 #' @param session	shiny session
 #' @importFrom googledrive drive_get
 #' @importFrom googlesheets4 read_sheet
-#' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body gm_send_message
+#' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body
+#'  gm_send_message
+#' @noRd
 RejectPost <- function(id_request, id_approver, comment, session){
   Ops.error <- NULL
   
@@ -394,6 +401,7 @@ RejectPost <- function(id_request, id_approver, comment, session){
 #' his/her post was rejected.
 #' @param id_request string, id of the request
 #' @param comment string, comments related to the post rejection
+#' @noRd
 RejectionPostHTML <- function(id_request, comment){
   html_post <-
     tags$html(

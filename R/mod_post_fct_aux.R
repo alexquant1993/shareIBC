@@ -15,7 +15,8 @@
 #' drive_share_anyone
 #' @importFrom googlesheets4 read_sheet sheet_append
 #' @importFrom gmailr gm_mime gm_to gm_from gm_subject gm_html_body
-#'  gm_attach_file gm_send_message
+#' gm_attach_file gm_send_message
+#' @noRd
 UploadPost <- function(name_poster,
                        email_poster,
                        type_post = c("jobs", "services", "upcycle", "mix"),
@@ -178,7 +179,7 @@ UploadPost <- function(name_poster,
 #' @param contact_email string, email to contact about the post
 #' @param contact_phone string, phone number to contact about the post
 #' @param id_approver string, id of the post approver
-
+#' @noRd
 PostApprovalHTML <- function(id_post,
                              name_poster,
                              email_poster,
