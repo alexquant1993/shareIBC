@@ -107,15 +107,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
       }
     },
     error = function(e){
-      message(e)
-      Ops.error <<- e
-      f7Dialog(
-        session = session,
-        title = "Error",
-        text = e,
-        type = "alert"
-      )
-      NULL
+      Ops.error <<- e$message
     }
   )
   
@@ -183,11 +175,13 @@ ConfirmationPostHTML <- function(id_request){
 ApprovedPostHTML <- function(dt_post){
   # Pretty names - type of post
   type_post <- 
-    plyr::mapvalues(dt_post$TYPE_POST,
-                    from = c("jobs", "services", "upcycle", "mix"),
-                    c("Job opportunities", "Offer your services",
-                      "Upcycle and donate", "Miscellaneous"),
-                    warn_missing = FALSE)
+    mapvalues(
+      x = dt_post$TYPE_POST,
+      from = c("jobs", "services", "upcycle", "mix"),
+      to = c("Job opportunities", "Offer your services",
+             "Upcycle and donate", "Miscellaneous"),
+      warn_missing = FALSE
+    )
   
   # Create custom HTML doc
   html_post <-
@@ -375,15 +369,7 @@ RejectPost <- function(id_request, id_approver, comment, session){
       }
     },
     error = function(e){
-      message(e)
-      Ops.error <<- e
-      f7Dialog(
-        session = session,
-        title = "Error",
-        text = e,
-        type = "alert"
-      )
-      NULL
+      Ops.error <<- e$message
     }
   )
   

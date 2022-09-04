@@ -1,4 +1,3 @@
-library(shinytest2)
 # What are we testing?
 # Approval workflow - Post tab
 # 1) User makes a post and is sent for approval
@@ -11,20 +10,20 @@ library(shinytest2)
 
 # Auxiliary steps
 testing_email <- 
-  shareIBC:::get_golem_config("testing_email", config = "default")
+  get_golem_config("testing_email", config = "default")
 type_of_posts <- c("jobs", "services", "upcycle", "mix")
 
 # Connect to APIs
-shareIBC:::ApiConnections("default")
+ApiConnections("default")
 
 # Read development posting databases
 # Mailing distribution list database
 wb_ml <- 
   googledrive::drive_get(
-    shareIBC:::get_golem_config("mailing_list_path", config = "default")
+    get_golem_config("mailing_list_path", config = "default")
   )
 # Add a subscriber to test the approval workflow
-shareIBC:::SubscribeEmail(
+SubscribeEmail(
   name = charlatan::ch_name(),
   email = testing_email,
   mailing_lists = c("jobs", "services", "upcycle", "mix"),
@@ -33,7 +32,7 @@ shareIBC:::SubscribeEmail(
 # Posts database
 wb <- 
   googledrive::drive_get(
-    shareIBC:::get_golem_config("posts_path", config = "default")
+    get_golem_config("posts_path", config = "default")
   )
 
 # Open headless app
@@ -61,7 +60,7 @@ test_that("Posting workflow - send post for approval...", {
     !!paste0(post_ui, "contact_phone") := 
       charlatan::ch_phone_number(locale = "es_ES")
   )
-  app$upload_file(!!paste0(post_ui, "attach_post") := shareIBC:::RandomPic())
+  app$upload_file(!!paste0(post_ui, "attach_post") := RandomPic())
   app$set_inputs(!!paste0(post_ui, "check_rgpd_post") := TRUE)
   
   # Submit post for approval
@@ -69,7 +68,7 @@ test_that("Posting workflow - send post for approval...", {
   
   # Check that fields are emptied after a successful process
   expect_identical(
-    shareIBC:::GetInputs(
+    GetInputs(
       app,
       paste0(
         post_ui,
@@ -93,7 +92,7 @@ app2 <-
   AppDriver$new(
     paste0(
       app$get_url(),
-      "?tab=approval&id_request=POST_000001&id_approver=APV_01"
+      "?tab=approval&id_request=POST_000000001&id_approver=APV_01"
     )
   )
 test_that("Posting workflow - accept/reject post...", {
@@ -104,7 +103,7 @@ test_that("Posting workflow - accept/reject post...", {
   expect_identical(dt$STATUS, "Approved")
   # Check that fields after a successful process
   expect_identical(
-    shareIBC:::GetInputs(
+    GetInputs(
       app2,
       c("approval_ui-comment", "approval_ui-request_approve",
         "approval_ui-request_reject")
@@ -139,8 +138,8 @@ googlesheets4::range_delete(wb_ml, sheet = "DATABASE", range = "2")
 googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2")
 googledrive::drive_rm(
   paste0(
-    dirname(shareIBC:::get_golem_config("posts_path")),
-    "/POST_000001"
+    dirname(get_golem_config("posts_path")),
+    "/POST_000000001"
   )
 )
 

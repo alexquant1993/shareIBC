@@ -9,15 +9,15 @@ library(shinytest2)
 
 # Auxiliary steps
 testing_email <- 
-  shareIBC:::get_golem_config("testing_email", config = "default")
+  get_golem_config("testing_email", config = "default")
 
 # Connect to APIs
-shareIBC:::ApiConnections("default")
+ApiConnections("default")
 
 # Read development mailing list worksheet
 wb <- 
   googledrive::drive_get(
-    shareIBC:::get_golem_config("mailing_list_path", config = "default")
+    get_golem_config("mailing_list_path", config = "default")
   )
 check_cols <- c("ACTIVE_JOBS", "ACTIVE_SERVICES", "ACTIVE_UPCYCLE", "ACTIVE_MIX")
 
@@ -44,7 +44,7 @@ test_that("Check is_valid_email function...", {
 test_that("Test subscription functions...", {
   # Email not registered on the mailing list
   expect_true(
-    shareIBC:::SubscribeEmail(
+    SubscribeEmail(
       name = charlatan::ch_name(),
       email = testing_email,
       mailing_lists = c("services", "mix"),
@@ -60,7 +60,7 @@ test_that("Test subscription functions...", {
   
   # Email already registered on the mailing list
   expect_true(
-    shareIBC:::SubscribeEmail(
+    SubscribeEmail(
       name = charlatan::ch_name(),
       email = testing_email,
       mailing_lists = c("jobs", "upcycle"),
@@ -76,7 +76,7 @@ test_that("Test subscription functions...", {
   
   # Invalid email
   expect_false(
-    shareIBC:::SubscribeEmail(
+    SubscribeEmail(
       name = charlatan::ch_name(),
       email = "@example.com",
       mailing_lists = c("services", "mix"),
@@ -88,14 +88,14 @@ test_that("Test subscription functions...", {
 test_that("Test unsubscription functions...", {
   # Email registered on the mailing list
   expect_true(
-    shareIBC:::UnsubscribeEmail(
+    UnsubscribeEmail(
       email = testing_email,
       mailing_lists = c("jobs", "upcycle"),
       session = NULL
     )$success
   )
   expect_true(
-    shareIBC:::UnsubscribeEmail(
+    UnsubscribeEmail(
       email = testing_email,
       mailing_lists = c("mix", "services"),
       session = NULL
@@ -110,7 +110,7 @@ test_that("Test unsubscription functions...", {
   
   # Email NOT registered on the mailing list
   expect_false(
-    shareIBC:::UnsubscribeEmail(
+    UnsubscribeEmail(
       email = "email@example.com",
       mailing_lists = c("jobs", "upcycle"),
       session = NULL
@@ -137,7 +137,7 @@ test_that("App subscription process checkup...", {
   # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
   # Incompatibility with custom JS function
   expect_identical(
-    shareIBC:::GetInputs(
+    GetInputs(
       app,
       c("more_ui-name_subs", "more_ui-email_subs",
         "more_ui-ml_subs", "more_ui-subscribeBtn")
@@ -153,7 +153,7 @@ test_that("App subscription process checkup...", {
   # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
   # Incompatibility with custom JS function
   expect_identical(
-    shareIBC:::GetInputs(
+    GetInputs(
       app,
       c("more_ui-email_unsubs", "more_ui-ml_unsubs", "more_ui-unsubscribeBtn")
     ),

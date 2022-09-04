@@ -8,6 +8,6 @@ $run_dev.*
 ^README\.Rmd$
 ^CODE_OF_CONDUCT\.md$
 ^Dockerfile$
-^\.secrets$
-^\.secret$
+.dockerignore
+^inst\.secrets
 _\.new\.png$

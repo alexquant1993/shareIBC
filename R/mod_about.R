@@ -99,7 +99,7 @@ mod_about_server <- function(id){
     output$sm_guide <- downloadHandler(
       filename = sm_guide_name,
       content = function(file) {
-        drive_download(id_sm_guide, file)
+        googledrive::drive_download(id_sm_guide, file)
       }
     )
   })

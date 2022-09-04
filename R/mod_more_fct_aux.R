@@ -57,8 +57,7 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
           )
         } else {
           # New entry
-          id_member <- 
-            paste0("ID_", stringr::str_pad(nrow(dt) + 1, width = 6, pad = "0"))
+          id_member <- paste0("ID_", sprintf("%08d", nrow(dt) + 1))
           new_entry <-
             data.frame(
               ID_MEMBER = id_member,
@@ -95,15 +94,7 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
       }
     },
     error = function(e){
-      message(e)
-      Ops.error <<- e
-      f7Dialog(
-        session = session,
-        title = "Error",
-        text = e,
-        type = "alert"
-      )
-      NULL
+      Ops.error <<- e$message
     }
   )
   
@@ -123,11 +114,13 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
 SubscriptionHTML <- function(mailing_lists){
   # Map values to a readable format
   mailing_lists <- 
-    plyr::mapvalues(mailing_lists,
-                    from = c("jobs", "services", "upcycle", "mix"),
-                    c("Job opportunities", "Offer your services",
-                      "Upcycle and Donate", "Miscellaneous"),
-                    warn_missing = FALSE)
+    mapvalues(
+      x = mailing_lists,
+      from = c("jobs", "services", "upcycle", "mix"),
+      to = c("Job opportunities", "Offer your services",
+             "Upcycle and Donate", "Miscellaneous"),
+      warn_missing = FALSE
+    )
   # Create HTML report
   doc_subs <- 
     tags$html(
@@ -253,15 +246,7 @@ UnsubscribeEmail <- function(email, mailing_lists, session){
       }
     },
     error = function(e){
-      message(e)
-      Ops.error <<- e
-      f7Dialog(
-        session = session,
-        title = "Error",
-        text = e,
-        type = "alert"
-      )
-      NULL
+      Ops.error <<- e$message
     }
   )
   
@@ -281,11 +266,13 @@ UnsubscribeEmail <- function(email, mailing_lists, session){
 UnsubscriptionHTML <- function(mailing_lists){
   # Map values to a readable format
   mailing_lists <- 
-    plyr::mapvalues(mailing_lists,
-                    from = c("jobs", "services", "upcycle", "mix"),
-                    c("Job opportunities", "Offer your services",
-                      "Upcycle and Donate", "Miscellaneous"),
-                    warn_missing = FALSE)
+    mapvalues(
+      x = mailing_lists,
+      from = c("jobs", "services", "upcycle", "mix"),
+      to = c("Job opportunities", "Offer your services",
+             "Upcycle and Donate", "Miscellaneous"),
+      warn_missing = FALSE
+    )
   # Create HTML report
   doc_unsubs <- 
     tags$html(

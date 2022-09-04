@@ -194,14 +194,33 @@ mod_post_tabs_server <- function(id){
       )
     })
     
+    # Create hostess and waiter loading helpers
+    hostess <- waiter::Hostess$new(infinite = TRUE)
+    waiter <-
+      waiter::Waiter$new(
+        html = 
+          hostess$get_loader(
+            fill_color = "#FFFFFF",
+            svg = "www/shareibc_hex.svg",
+            progress_type = "fill",
+            fill_direction = "ttb",
+            center_page = TRUE
+          ),
+        color = "#D14D42",
+        fadeout = 1000
+      )
     # Upload post data into googledrive and send pre-approval email
     observeEvent(input$submit_post, {
       # User loading experience
       shinyjs::disable("submit_post")
-      showF7Preloader(color = "blue")
+      waiter$show()
+      hostess$start()
+      # showF7Preloader(color = "blue")
       on.exit({
         shinyjs::enable("submit_post")
-        hideF7Preloader()
+        hostess$close()
+        waiter$hide()
+        # hideF7Preloader()
       })
       
       # Upload data and send pre-approval email

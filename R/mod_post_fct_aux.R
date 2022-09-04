@@ -50,28 +50,30 @@ UploadPost <- function(name_poster,
       # Output conditioned to whether the email is valid or not
       if (cond_email) {
         # Create POST ID
-        id_post <- 
-          paste0("POST_", stringr::str_pad(nrow(dt) + 1, width = 6, pad = "0"))
+        id_post <- paste0("POST_", sprintf("%09d", nrow(dt) + 1))
         
         # Create googledrive directory to store data about the post
         # Store uploaded files, if any
         if (isTruthy(files_tmp)) {
           print("Creating folder to store images of the post...")
-          drive_directory <- 
-            paste0(dirname(get_golem_config("posts_path")), "/", id_post)
-          if (id_post %in% drive_ls("posts")$name) {
+          posts_path_dir <- dirname(get_golem_config("posts_path"))
+          drive_directory <- paste0(posts_path_dir, "/", id_post)
+          if (id_post %in% drive_ls(posts_path_dir)$name) {
             # Create aux name when there is already a folder name with the id_post
             drive_directory <- paste0(drive_directory, "_", sample(1:100, 1))
           }
+          # Create directory
           drive_mkdir(drive_directory)
+          # Convert non-English characters into ASCII characters
+          files_tmp$name <- 
+            iconv(files_tmp$name, from = "UTF-8", to ="ASCII//TRANSLIT")
           # Beautify files path
-          files_names <- files_tmp$name
           files_path <- fixUploadedFilesNames(files_tmp)$datapath
           # Upload files to googledrive
           print("Uploading images to googledrive directory...")
           for (k in 1:length(files_path)) {
             files_path[k] %>% 
-              drive_upload(path = drive_directory, name = files_names[k]) %>% 
+              drive_upload(path = drive_directory, name = files_tmp$name[k]) %>% 
               drive_share_anyone()
           }
           files_id <- paste(drive_ls(drive_directory)$id, collapse = ",")
@@ -104,7 +106,6 @@ UploadPost <- function(name_poster,
         sheet_append(ss = wb, data = new_entry, sheet = "DATABASE")
         
         # Send approval email
-        print("Sending post approval request to admins...")
         # Compose email tailored to each approver
         for (j in 1:length(dt_approvers$EMAIL)) {
           print("Creating HTML approval request...")
@@ -138,6 +139,7 @@ UploadPost <- function(name_poster,
             }
           }
           # Send email
+          print("Sending post approval request to admins...")
           gm_send_message(message)
         }
       } else {
@@ -148,15 +150,7 @@ UploadPost <- function(name_poster,
       }
     },
     error = function(e){
-      message(e)
-      Ops.error <<- e
-      f7Dialog(
-        session = session,
-        title = "Error",
-        text = e,
-        type = "alert"
-      )
-      NULL
+      Ops.error <<- e$message
     }
   )
   
@@ -194,11 +188,13 @@ PostApprovalHTML <- function(id_post,
   
   # Pretty names - type of post
   type_post <- 
-    plyr::mapvalues(type_post,
-                    from = c("jobs", "services", "upcycle", "mix"),
-                    c("Job opportunities", "Offer your services",
-                      "Upcycle and donate", "Miscellaneous"),
-                    warn_missing = FALSE)
+    mapvalues(
+      x = type_post,
+      from = c("jobs", "services", "upcycle", "mix"),
+      to = c("Job opportunities", "Offer your services",
+             "Upcycle and donate", "Miscellaneous"),
+      warn_missing = FALSE
+    )
   
   # Create custom HTML doc
   html_post <-

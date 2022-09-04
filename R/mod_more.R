@@ -138,14 +138,33 @@ mod_more_server <- function(id){
         isTruthy(input$email_unsubs) & isTruthy(input$ml_unsubs))
     })
     
+    # Create hostess and waiter loading helpers
+    hostess <- waiter::Hostess$new(infinite = TRUE)
+    waiter <-
+      waiter::Waiter$new(
+        html = 
+          hostess$get_loader(
+            fill_color = "#FFFFFF",
+            svg = "www/shareibc_hex.svg",
+            progress_type = "fill",
+            fill_direction = "ttb",
+            center_page = TRUE
+          ),
+        color = "#D14D42",
+        fadeout = 1000
+      )
     # Subscription process (send confirmation email)
     observeEvent(input$subscribeBtn, {
       # User-experience stuff
       shinyjs::disable("subscribeBtn")
-      showF7Preloader(color = "blue")
+      waiter$show()
+      hostess$start()
+      # showF7Preloader(color = "blue")
       on.exit({
         shinyjs::enable("subscribeBtn")
-        hideF7Preloader()
+        hostess$close()
+        waiter$hide()
+        # hideF7Preloader()
       })
 
       # Add email to selected mailing lists and send confirmation email
