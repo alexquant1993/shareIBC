@@ -1,6 +1,6 @@
 Package: shareIBC
 Title: Share IBC
-Version: 0.0.0.9000
+Version: 1.0.0
 Authors@R: person('Anderson', 'Arroyo', email = 'a.arroyo@pucp.pe', role = c('cre', 'aut'))
 Description: Application of the Social Ministry at IBC Madrid created to
   allow members of the community to share job opportunities, offer their
@@ -29,7 +29,8 @@ Suggests:
     shinytest2,
     shinipsum,
     charlatan,
-    roxygen2
+    roxygen2,
+    covr
 Config/testthat/edition: 3
 Language: en-US
 Depends: 

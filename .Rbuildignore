@@ -11,3 +11,5 @@ $run_dev.*
 .dockerignore
 ^inst\.secrets
 _\.new\.png$
+^\.github$
+^codecov\.yml$
