@@ -17,6 +17,7 @@
 ## Add one line by package you want to add as dependency
 # usethis::use_package( "thinkr" )
 usethis::use_package( "shinyMobile" )
+usethis::use_package( "gargle" )
 usethis::use_package( "shinyjs" )
 usethis::use_package( "gmailr" )
 usethis::use_package( "googledrive" )

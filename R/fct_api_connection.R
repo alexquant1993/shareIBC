@@ -10,9 +10,12 @@ ApiConnections <- function(env = c("default", "production")){
   Sys.setenv("R_CONFIG_ACTIVE" = env)
   
   # Authentication process - connection to GOOGLE APIS
-  if (gargle:::secret_can_decrypt("shareIBC")) {
+  secret_can_decrypt <- utils::getFromNamespace("secret_can_decrypt", "gargle")
+  secret_read <- utils::getFromNamespace("secret_read", "gargle")
+  
+  if (secret_can_decrypt("shareIBC")) {
     # JSON OAuth app
-    json_path <- gargle:::secret_read("shareIBC", "shareIBC_OAuth.json")
+    json_path <- secret_read("shareIBC", "shareIBC_OAuth.json")
     # Set gargle options
     options(
       # Designate project-specific cache
@@ -32,3 +35,5 @@ ApiConnections <- function(env = c("default", "production")){
     gmailr::gm_auth(email = get_golem_config("gmail_account"))
   } 
 }
+
+

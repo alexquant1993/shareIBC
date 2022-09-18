@@ -1,6 +1,6 @@
 #####DISCLAIMER: Borrowing mapvalues from plyr package (Hadley WickHam) 
 # in order to not add another dependency over just one function.
-context("Replace values")
+# context("Replace values")
 
 
 # Character vector
