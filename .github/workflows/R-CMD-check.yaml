@@ -14,7 +14,6 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
-      SHAREIBC_PASSWORD: ${{ secrets.SHAREIBC_PASSWORD }}
       
     steps:
       - uses: actions/checkout@v2
@@ -29,3 +28,5 @@ jobs:
           needs: check
 
       - uses: r-lib/actions/check-r-package@v2
+        env:
+          SHAREIBC_PASSWORD: ${{ secrets.SHAREIBC_PASSWORD }}
