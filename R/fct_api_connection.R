@@ -13,7 +13,6 @@ ApiConnections <- function(env = c("default", "production")){
   if (gargle:::secret_can_decrypt("shareIBC")) {
     # JSON OAuth app
     json_path <- gargle:::secret_read("shareIBC", "shareIBC_OAuth.json")
-    json_path <- system.file("/.secrets/shareIBC_OAuth.json", package = "shareIBC")
     # Set gargle options
     options(
       # Designate project-specific cache
