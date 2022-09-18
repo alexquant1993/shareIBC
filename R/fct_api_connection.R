@@ -21,7 +21,8 @@ ApiConnections <- function(env = c("default", "production")){
       # Designate project-specific cache
       gargle_oauth_cache = system.file("/secret/tokens", package = "shareIBC"),
       # OAuth email
-      gargle_oauth_email = get_golem_config("gmail_account")
+      gargle_oauth_email = get_golem_config("gmail_account"),
+      gargle_verbosity = "debug"
     )
     # Grant permission to googledrive, googlesheets4 and gmailr
     # Googledrive
