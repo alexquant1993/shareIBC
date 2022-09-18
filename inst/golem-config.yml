@@ -1,6 +1,6 @@
 default:
   golem_name: shareIBC
-  golem_version: 0.0.0.9000
+  golem_version: 1.0.0
   app_prod: no
   posts_path: posts/development/DT_POSTS_DEV
   mailing_list_path: mailing_list/DT_MAILING_LIST_DEV

@@ -10,22 +10,26 @@ ApiConnections <- function(env = c("default", "production")){
   Sys.setenv("R_CONFIG_ACTIVE" = env)
   
   # Authentication process - connection to GOOGLE APIS
-  # JSON OAuth app
-  json_path <- system.file("/.secrets/shareIBC_OAuth.json", package = "shareIBC")
-  # Set gargle options
-  options(
-    # Designate project-specific cache
-    gargle_oauth_cache = system.file("/.secrets/tokens", package = "shareIBC"),
-    # OAuth email
-    gargle_oauth_email = get_golem_config("gmail_account")
-  )
-  # Grant permission to googledrive, googlesheets4 and gmailr
-  # Googledrive
-  googledrive::drive_auth_configure(path = json_path)
-  googledrive::drive_auth()
-  # Googlesheets authentication
-  googlesheets4::gs4_auth()
-  # Gmail authentication
-  gmailr::gm_auth_configure(path = json_path)
-  gmailr::gm_auth(email = get_golem_config("gmail_account"))
+  if (gargle:::secret_can_decrypt("shareIBC")) {
+    # JSON OAuth app
+    json_path <- gargle:::secret_read("shareIBC", "shareIBC_OAuth.json")
+    json_path <- system.file("/.secrets/shareIBC_OAuth.json", package = "shareIBC")
+    # Set gargle options
+    options(
+      # Designate project-specific cache
+      gargle_oauth_cache = system.file("/secret/tokens", package = "shareIBC"),
+      # OAuth email
+      gargle_oauth_email = get_golem_config("gmail_account")
+    )
+    # Grant permission to googledrive, googlesheets4 and gmailr
+    # Googledrive
+    googledrive::drive_auth_configure(path = rawToChar(json_path))
+    googledrive::drive_auth()
+
+    # Googlesheets authentication
+    googlesheets4::gs4_auth()
+    # Gmail authentication
+    gmailr::gm_auth_configure(path = rawToChar(json_path))
+    gmailr::gm_auth(email = get_golem_config("gmail_account"))
+  } 
 }

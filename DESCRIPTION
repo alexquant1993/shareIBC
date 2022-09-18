@@ -30,7 +30,8 @@ Suggests:
     shinipsum,
     charlatan,
     roxygen2,
-    covr
+    covr,
+    sodium
 Config/testthat/edition: 3
 Language: en-US
 Depends: 

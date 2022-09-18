@@ -61,7 +61,7 @@ usethis::use_data_raw( name = "my_dataset", open = FALSE )
 ## Add one line by test you want to create
 usethis::use_test("subscription")
 usethis::use_test("posting")
-usethis::use_test("searchbar")
+usethis::use_test("helper-auh")
 usethis::use_test("other")
 
 # Documentation
