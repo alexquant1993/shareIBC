@@ -13,32 +13,43 @@ testing_email <-
   get_golem_config("testing_email", config = "default")
 type_of_posts <- c("jobs", "services", "upcycle", "mix")
 
+# Auxiliary functions
+skip_if_no_token <- function() {
+  testthat::skip_if_not(
+    googledrive::drive_has_token() &
+      googlesheets4::gs4_has_token() &
+      gmailr::gm_has_token(), "No token")
+}
+secret_can_decrypt <- utils::getFromNamespace("secret_can_decrypt", "gargle")
+
 # Connect to APIs
 ApiConnections("default")
 
 # Read development posting databases
-# Mailing distribution list database
-wb_ml <- 
-  googledrive::drive_get(
-    get_golem_config("mailing_list_path", config = "default")
+if (secret_can_decrypt("shareIBC")) {
+  # Mailing distribution list database
+  wb_ml <- 
+    googledrive::drive_get(
+      get_golem_config("mailing_list_path", config = "default")
+    )
+  # Add a subscriber to test the approval workflow
+  SubscribeEmail(
+    name = charlatan::ch_name(),
+    email = testing_email,
+    mailing_lists = c("jobs", "services", "upcycle", "mix"),
+    session = NULL
   )
-# Add a subscriber to test the approval workflow
-SubscribeEmail(
-  name = charlatan::ch_name(),
-  email = testing_email,
-  mailing_lists = c("jobs", "services", "upcycle", "mix"),
-  session = NULL
-)
-# Posts database
-wb <- 
-  googledrive::drive_get(
-    get_golem_config("posts_path", config = "default")
-  )
-
-# Open headless app
-app <- AppDriver$new(app_dir = testthat::test_path("apps"))
+  # Posts database
+  wb <- 
+    googledrive::drive_get(
+      get_golem_config("posts_path", config = "default")
+    )
+  # Open headless app
+  app <- AppDriver$new(app_dir = testthat::test_path("apps"))
+}
 
 test_that("Posting workflow - send post for approval...", {
+  skip_if_no_token()
   # Open the post tab, select the type randomly
   app$click("post_ui-bttn_post")
   app$set_inputs(`post_ui-popup_post` = TRUE)
@@ -86,16 +97,19 @@ test_that("Posting workflow - send post for approval...", {
 #   was approved or rejected.
 # - An email is sent to the current/active mailing list for the specific
 #   category of the post.
-
-# Open headless app
-app2 <- 
-  AppDriver$new(
-    paste0(
-      app$get_url(),
-      "?tab=approval&id_request=POST_000000001&id_approver=APV_01"
+if (secret_can_decrypt("shareIBC")) {
+  # Open headless app
+  app2 <- 
+    AppDriver$new(
+      paste0(
+        app$get_url(),
+        "?tab=approval&id_request=POST_000000001&id_approver=APV_01"
+      )
     )
-  )
+}
+
 test_that("Posting workflow - accept/reject post...", {
+  skip_if_no_token()
   # Approve post
   app2$set_inputs(`approval_ui-comment` = shinipsum::random_text(nwords = 10))
   app2$click("approval_ui-request_approve", timeout_ = 30 * 1000)
@@ -133,16 +147,18 @@ test_that("Posting workflow - accept/reject post...", {
   expect_identical(dt$STATUS, "Rejected")
 })
 
-# Remove created registers and folders
-googlesheets4::range_delete(wb_ml, sheet = "DATABASE", range = "2")
-googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2")
-googledrive::drive_rm(
-  paste0(
-    dirname(get_golem_config("posts_path")),
-    "/POST_000000001"
+if (secret_can_decrypt("shareIBC")) {
+  # Remove created registers and folders
+  googlesheets4::range_delete(wb_ml, sheet = "DATABASE", range = "2")
+  googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2")
+  googledrive::drive_rm(
+    paste0(
+      dirname(get_golem_config("posts_path")),
+      "/POST_000000001"
+    )
   )
-)
-
-# Close both headless apps
-app$stop()
-app2$stop()
+  
+  # Close both headless apps
+  app$stop()
+  app2$stop()
+}

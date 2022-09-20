@@ -7,6 +7,15 @@
 # Load required libraries
 library(shinytest2)
 
+# Auxiliary functions
+skip_if_no_token <- function() {
+  testthat::skip_if_not(
+    googledrive::drive_has_token() &
+      googlesheets4::gs4_has_token() &
+      gmailr::gm_has_token(), "No token")
+}
+secret_can_decrypt <- utils::getFromNamespace("secret_can_decrypt", "gargle")
+
 # Auxiliary steps
 testing_email <- 
   get_golem_config("testing_email", config = "default")
@@ -15,13 +24,17 @@ testing_email <-
 ApiConnections("default")
 
 # Read development mailing list worksheet
-wb <- 
-  googledrive::drive_get(
-    get_golem_config("mailing_list_path", config = "default")
-  )
-check_cols <- c("ACTIVE_JOBS", "ACTIVE_SERVICES", "ACTIVE_UPCYCLE", "ACTIVE_MIX")
+if (secret_can_decrypt("shareIBC")) {
+  wb <- 
+    googledrive::drive_get(
+      get_golem_config("mailing_list_path", config = "default")
+    )
+  check_cols <-
+    c("ACTIVE_JOBS", "ACTIVE_SERVICES", "ACTIVE_UPCYCLE", "ACTIVE_MIX")
+}
 
 test_that("Check is_valid_email function...", {
+  skip_if_no_token()
   # Check valid emails
   expect_true(is_valid_email("email@example.com"))
   expect_true(is_valid_email("firstname.lastname@example.com"))
@@ -42,6 +55,7 @@ test_that("Check is_valid_email function...", {
 
 # Make sure that you are executing these tests on the development environment
 test_that("Test subscription functions...", {
+  skip_if_no_token()
   # Email not registered on the mailing list
   expect_true(
     SubscribeEmail(
@@ -86,6 +100,7 @@ test_that("Test subscription functions...", {
 })
 
 test_that("Test unsubscription functions...", {
+  skip_if_no_token()
   # Email registered on the mailing list
   expect_true(
     UnsubscribeEmail(
@@ -122,9 +137,12 @@ test_that("Test unsubscription functions...", {
 })
 
 # Open headless app
-app <- AppDriver$new(app_dir = testthat::test_path("apps"))
+if (secret_can_decrypt("shareIBC")) {
+  app <- AppDriver$new(app_dir = testthat::test_path("apps"))
+}
 
 test_that("App subscription process checkup...", {
+  skip_if_no_token()
   # Open more tabset
   app$set_inputs(main_tabset = "More")
   
@@ -161,7 +179,9 @@ test_that("App subscription process checkup...", {
   )
 })
 
-# Finish headless app
-app$stop()
-# Remove register
-googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2")
+if (secret_can_decrypt("shareIBC")) {
+  # Finish headless app
+  app$stop()
+  # Remove register
+  googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2")
+}
