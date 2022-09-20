@@ -9,32 +9,28 @@ ApiConnections <- function(env = c("default", "production")){
   env <- match.arg(env)
   Sys.setenv("R_CONFIG_ACTIVE" = env)
   
-  # Authentication process - connection to GOOGLE APIS
+  # Extract internal functions from packages to avoid ::: R CMD Check warning
   secret_can_decrypt <- utils::getFromNamespace("secret_can_decrypt", "gargle")
   secret_read <- utils::getFromNamespace("secret_read", "gargle")
+  .auth <- utils::getFromNamespace(".auth", "gmailr")
   
+  # Authentication process - connection to GOOGLE APIS
   if (secret_can_decrypt("shareIBC")) {
-    # JSON OAuth app
-    json_path <- secret_read("shareIBC", "shareIBC_OAuth.json")
-    # Set gargle options
-    options(
-      # Designate project-specific cache
-      gargle_oauth_cache = system.file("/secret/tokens", package = "shareIBC"),
-      # OAuth email
-      gargle_oauth_email = get_golem_config("gmail_account"),
-      gargle_verbosity = "debug"
-    )
+    # JSON OAuth app - service account encrypted token
+    json_path <- secret_read("shareIBC", "shareibc_service_account.json")
     # Grant permission to googledrive, googlesheets4 and gmailr
-    # Googledrive
-    googledrive::drive_auth_configure(path = rawToChar(json_path))
-    googledrive::drive_auth()
-
+    # Googledrive authentication
+    googledrive::drive_auth(path = rawToChar(json_path))
     # Googlesheets authentication
-    googlesheets4::gs4_auth()
+    googlesheets4::gs4_auth(path = rawToChar(json_path))
     # Gmail authentication
-    gmailr::gm_auth_configure(path = rawToChar(json_path))
-    gmailr::gm_auth(email = get_golem_config("gmail_account"))
-  } 
+    # Get token given the service account credentials
+    token <- gargle::credentials_service_account(
+      scopes = "https://mail.google.com/", # Full scope
+      path = rawToChar(json_path), # Encrypted 
+      subject = get_golem_config("gmail_account") # Impersonate service account
+    )
+    # Assign token to .auth internal object from gmailr package
+    assign("cred", token, .auth)
+  }
 }
-
-
