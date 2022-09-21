@@ -136,23 +136,12 @@ test_that("App subscription process checkup...", {
   app$click("more_ui-subscribeBtn", timeout_ = 10 * 1000)
   # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
   # Incompatibility with custom JS function
-  # expect_identical(app$get_value(input = "more_ui-name_subs"), "")
-  # expect_identical(app$get_value(input = "more_ui-email_subs"), "")
   # expect_identical(
-  #   app$get_value(input = "more_ui-ml_subs"),
-  #   c("jobs", "services", "upcycle", "mix")
-  # )
-  # expect_identical(
-  #   as.character(app$get_value(input = "more_ui-subscribeBtn")),
-  #   "1"
-  # )
-  
-  # expect_identical(
-  # GetInputs(
-  #   app,
-  #   c("more_ui-name_subs", "more_ui-email_subs",
-  #     "more_ui-ml_subs", "more_ui-subscribeBtn")
-  # ),
+  #   GetInputs(
+  #     app,
+  #     c("more_ui-name_subs", "more_ui-email_subs",
+  #       "more_ui-ml_subs", "more_ui-subscribeBtn")
+  #   ),
   #   c("", "", "jobs", "services", "upcycle", "mix", "1")
   # )
   
@@ -174,7 +163,6 @@ test_that("App subscription process checkup...", {
 
 if (secret_can_decrypt("shareIBC")) {
   # Finish headless app
-  app_wait(app)
   app$stop()
   # Remove register
   googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2")

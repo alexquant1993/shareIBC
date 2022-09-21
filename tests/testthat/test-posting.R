@@ -137,10 +137,7 @@ if (secret_can_decrypt("shareIBC")) {
       "/POST_000000001"
     )
   )
-  
   # Close both headless apps
-  app_wait(app)
   app$stop()
-  app_wait(app2)
   app2$stop()
 }
