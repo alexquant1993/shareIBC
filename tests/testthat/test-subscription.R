@@ -4,25 +4,6 @@
 # - User unsubscribes to a given set of categories
 # In both cases a confirmation mail is sent to the user
 
-# Load required libraries
-library(shinytest2)
-
-# Auxiliary functions
-skip_if_no_token <- function() {
-  testthat::skip_if_not(
-    googledrive::drive_has_token() &
-      googlesheets4::gs4_has_token() &
-      gmailr::gm_has_token(), "No token")
-}
-secret_can_decrypt <- utils::getFromNamespace("secret_can_decrypt", "gargle")
-
-# Auxiliary steps
-testing_email <- 
-  get_golem_config("testing_email", config = "default")
-
-# Connect to APIs
-ApiConnections("default")
-
 # Read development mailing list worksheet
 if (secret_can_decrypt("shareIBC")) {
   wb <- 
@@ -154,20 +135,23 @@ test_that("App subscription process checkup...", {
   app$click("more_ui-subscribeBtn", timeout_ = 10 * 1000)
   # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
   # Incompatibility with custom JS function
-  expect_identical(app$get_value("more_ui-name_subs"), "")
-  expect_identical(app$get_value("more_ui-email_subs"), "")
+  expect_identical(app$get_value(input = "more_ui-name_subs"), "")
+  expect_identical(app$get_value(input = "more_ui-email_subs"), "")
   expect_identical(
-    app$get_value("more_ui-ml_subs"),
+    app$get_value(input = "more_ui-ml_subs"),
     c("jobs", "services", "upcycle", "mix")
   )
-  expect_identical(app$get_value("more_ui-subscribeBtn"), "1")
+  expect_identical(
+    as.character(app$get_value(input = "more_ui-subscribeBtn")),
+    "1"
+  )
   
   # expect_identical(
-  #   GetInputs(
-  #     app,
-  #     c("more_ui-name_subs", "more_ui-email_subs",
-  #       "more_ui-ml_subs", "more_ui-subscribeBtn")
-  #   ),
+  # GetInputs(
+  #   app,
+  #   c("more_ui-name_subs", "more_ui-email_subs",
+  #     "more_ui-ml_subs", "more_ui-subscribeBtn")
+  # ),
   #   c("", "", "jobs", "services", "upcycle", "mix", "1")
   # )
   

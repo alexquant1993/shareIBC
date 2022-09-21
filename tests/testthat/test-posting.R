@@ -5,26 +5,6 @@
 # - A confirmation email of the post is sent to the poster, acknowledging that
 #   it will be sent for approval.
 
-# Load required libraries
-library(shinytest2)
-
-# Auxiliary steps
-testing_email <- 
-  get_golem_config("testing_email", config = "default")
-type_of_posts <- c("jobs", "services", "upcycle", "mix")
-
-# Auxiliary functions
-skip_if_no_token <- function() {
-  testthat::skip_if_not(
-    googledrive::drive_has_token() &
-      googlesheets4::gs4_has_token() &
-      gmailr::gm_has_token(), "No token")
-}
-secret_can_decrypt <- utils::getFromNamespace("secret_can_decrypt", "gargle")
-
-# Connect to APIs
-ApiConnections("default")
-
 # Read development posting databases
 if (secret_can_decrypt("shareIBC")) {
   # Mailing distribution list database
