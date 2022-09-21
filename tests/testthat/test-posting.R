@@ -139,6 +139,8 @@ if (secret_can_decrypt("shareIBC")) {
   )
   
   # Close both headless apps
+  app_wait(app)
   app$stop()
+  app_wait(app2)
   app2$stop()
 }

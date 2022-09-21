@@ -131,6 +131,7 @@ test_that("App subscription process checkup...", {
   app$set_inputs(`more_ui-more_accordion` = c("TRUE", "Subscribe"))
   app$set_inputs(`more_ui-name_subs` = charlatan::ch_name())
   app$set_inputs(`more_ui-email_subs` = testing_email)
+  expect_identical(app$get_value(input = "more_ui-email_subs"), testing_email)
   app$set_inputs(`more_ui-ml_subs` = c("jobs", "services", "upcycle", "mix"))
   app$click("more_ui-subscribeBtn", timeout_ = 10 * 1000)
   # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
@@ -173,6 +174,7 @@ test_that("App subscription process checkup...", {
 
 if (secret_can_decrypt("shareIBC")) {
   # Finish headless app
+  app_wait(app)
   app$stop()
   # Remove register
   googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2")
