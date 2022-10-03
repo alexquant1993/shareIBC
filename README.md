@@ -5,8 +5,6 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![R-CMD-check](https://github.com/alexquant1993/socialministryapp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/alexquant1993/socialministryapp/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/alexquant1993/socialministryapp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/alexquant1993/socialministryapp?branch=master)
