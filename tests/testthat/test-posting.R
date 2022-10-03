@@ -12,6 +12,8 @@ if (secret_can_decrypt("shareIBC")) {
     googledrive::drive_get(
       get_golem_config("mailing_list_path", config = "default")
     )
+  # Remove all previous records
+  googlesheets4::range_delete(wb_ml, sheet = "DATABASE", range = "2:1048576")
   # Add a subscriber to test the approval workflow
   SubscribeEmail(
     name = charlatan::ch_name(),
@@ -24,6 +26,8 @@ if (secret_can_decrypt("shareIBC")) {
     googledrive::drive_get(
       get_golem_config("posts_path", config = "default")
     )
+  # Remove all previous records
+  googlesheets4::range_delete(wb, sheet = "DATABASE", range = "2:1048576")
   # Open headless app
   app <- AppDriver$new(app_dir = testthat::test_path("apps"))
 }
@@ -58,18 +62,18 @@ test_that("Posting workflow - send post for approval...", {
   app$click(paste0(post_ui, "submit_post"), timeout_ = 30 * 1000)
   
   # Check that fields are emptied after a successful process
-  # expect_identical(
-  #   GetInputs(
-  #     app,
-  #     paste0(
-  #       post_ui,
-  #       c("name_poster", "email_poster", "subject",
-  #         "description", "contact_email", "contact_phone",
-  #         "check_rgpd_post")
-  #     )
-  #   ),
-  #   c(rep("", 6), "FALSE")
-  # )
+  expect_identical(
+    GetInputs(
+      app,
+      paste0(
+        post_ui,
+        c("name_poster", "email_poster", "subject",
+          "description", "contact_email", "contact_phone",
+          "check_rgpd_post")
+      )
+    ),
+    c(rep("", 6), "FALSE")
+  )
 })
 
 # 2) Approver receives the mail and approves/rejects the post
@@ -96,14 +100,14 @@ test_that("Posting workflow - accept/reject post...", {
   dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
   expect_identical(dt$STATUS, "Approved")
   # Check that fields after a successful process
-  # expect_identical(
-  #   GetInputs(
-  #     app2,
-  #     c("approval_ui-comment", "approval_ui-request_approve",
-  #       "approval_ui-request_reject")
-  #   ),
-  #   c("", "1", "0")
-  # )
+  expect_identical(
+    GetInputs(
+      app2,
+      c("approval_ui-comment", "approval_ui-request_approve",
+        "approval_ui-request_reject")
+    ),
+    c("", "1", "0")
+  )
   
   # Try to reject a post that already has been approved
   app2$set_inputs(`approval_ui-comment` = shinipsum::random_text(nwords = 10))
