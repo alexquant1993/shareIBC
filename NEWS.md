@@ -1,4 +1,4 @@
-# shareIBC 1.0.0
+# shareIBC 0.1.0
 * Full operational app.
 
 # shareIBC 0.0.0.9000

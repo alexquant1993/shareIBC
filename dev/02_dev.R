@@ -16,6 +16,7 @@
 ## Dependencies ----
 ## Add one line by package you want to add as dependency
 # usethis::use_package( "thinkr" )
+attachment::att_amend_desc()
 usethis::use_package( "shinyMobile" )
 usethis::use_package( "gargle" )
 usethis::use_package( "shinyjs" )
