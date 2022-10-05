@@ -1435,29 +1435,6 @@
         "cli"
       ]
     },
-    "shareIBC": {
-      "Package": "shareIBC",
-      "Version": "0.1.0",
-      "Source": "unknown",
-      "Hash": "95ac2fbadafc7117fbd8b0cc56f3a471",
-      "Requirements": [
-        "charlatan",
-        "config",
-        "gargle",
-        "gmailr",
-        "golem",
-        "googledrive",
-        "googlesheets4",
-        "htmltools",
-        "httr",
-        "rlang",
-        "shinipsum",
-        "shiny",
-        "shinyMobile",
-        "shinyjs",
-        "waiter"
-      ]
-    },
     "shinipsum": {
       "Package": "shinipsum",
       "Version": "0.1.0",
