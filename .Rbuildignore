@@ -1,5 +1,6 @@
 ^renv$
 ^renv\.lock$
+.renvignore
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^data-raw$
@@ -11,7 +12,7 @@ $run_dev.*
 ^CODE_OF_CONDUCT\.md$
 ^Dockerfile$
 .dockerignore
-^inst\.secrets
+^inst\secret
 _\.new\.png$
 ^\.github$
 ^codecov\.yml$

@@ -1280,6 +1280,14 @@
         "withr"
       ]
     },
+    "sodium": {
+      "Package": "sodium",
+      "Version": "1.2.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "3606bb09e0914edd4fc8313b500dcd5e",
+      "Requirements": []
+    },
     "sourcetools": {
       "Package": "sourcetools",
       "Version": "0.1.7",
