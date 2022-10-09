@@ -66,10 +66,5 @@ jobs:
 
       - name: Show testthat output
         if: always()
-        run: |
-          ## --------------------------------------------------------------------
-          echo ::group::Show testthat output
-          find check -name 'testthat.Rout*' -exec cat '{}' \; || true
-          echo ::endgroup::
+        run: find check -name 'testthat.Rout*' -exec cat '{}' \; || true
         shell: bash
-        working-directory: ${{ inputs.working-directory }}

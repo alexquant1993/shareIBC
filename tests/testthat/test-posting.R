@@ -37,12 +37,14 @@ test_that("Posting workflow - send post for approval...", {
   # Open the post tab, select the type randomly
   app$click("post_ui-bttn_post")
   app$set_inputs(`post_ui-popup_post` = TRUE)
-  post_ui <- paste0("post_ui-", sample(type_of_posts, 1), "-")
+  type_post <- sample(type_of_posts, 1)
+  post_ui <- paste0("post_ui-", type_post, "-")
   app$click(paste0(post_ui, "bttn_post_tab"))
   
   # Fill out the fields randomly
   app$set_inputs(!!paste0(post_ui, "popup_post_tab") := TRUE)
-  app$set_inputs(!!paste0(post_ui, "name_poster") := charlatan::ch_name())
+  name_subs <- charlatan::ch_name()
+  app$set_inputs(!!paste0(post_ui, "name_poster") := name_subs)
   app$set_inputs(!!paste0(post_ui, "email_poster") := testing_email)
   app$set_inputs(
     !!paste0(post_ui, "subject") := shinipsum::random_text(nwords = 5)
@@ -51,28 +53,33 @@ test_that("Posting workflow - send post for approval...", {
     !!paste0(post_ui, "description") := shinipsum::random_text(nwords = 20)
   )
   app$set_inputs(!!paste0(post_ui, "contact_email") := "email@example.com")
-  app$set_inputs(
-    !!paste0(post_ui, "contact_phone") := 
-      charlatan::ch_phone_number(locale = "es_ES")
-  )
+  contact_phone <- charlatan::ch_phone_number(locale = "es_ES")
+  app$set_inputs(!!paste0(post_ui, "contact_phone") := contact_phone)
   app$upload_file(!!paste0(post_ui, "attach_post") := RandomPic())
   app$set_inputs(!!paste0(post_ui, "check_rgpd_post") := TRUE)
   
   # Submit post for approval
   app$click(paste0(post_ui, "submit_post"), timeout_ = 30 * 1000)
   
-  # Check that fields are emptied after a successful process
+  # Check if fields are properly populated
+  dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
+  exp_list <-
+    list(
+      ID_POST = "POST_000000001",
+      NAME_POSTER = name_subs,
+      EMAIL_POSTER = testing_email,
+      TYPE_POST = type_post,
+      SUBJECT = shinipsum::random_text(nwords = 5),
+      DESCRIPTION = shinipsum::random_text(nwords = 20),
+      CONTACT_EMAIL = "email@example.com",
+      CONTACT_PHONE = contact_phone,
+      GDPR_ACCEPTANCE = TRUE,
+      STATUS = "In progress",
+      CONDITION = "Open"
+    )
   expect_identical(
-    GetInputs(
-      app,
-      paste0(
-        post_ui,
-        c("name_poster", "email_poster", "subject",
-          "description", "contact_email", "contact_phone",
-          "check_rgpd_post")
-      )
-    ),
-    c(rep("", 6), "FALSE")
+    as.list(dt[names(dt) %in% names(exp_list)]),
+    exp_list
   )
 })
 
@@ -97,24 +104,28 @@ test_that("Posting workflow - accept/reject post...", {
   # Approve post
   app2$set_inputs(`approval_ui-comment` = shinipsum::random_text(nwords = 10))
   app2$click("approval_ui-request_approve", timeout_ = 30 * 1000)
+  # Check if fields are properly populated
   dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
-  expect_identical(dt$STATUS, "Approved")
-  # Check that fields after a successful process
+  exp_list <-
+    list(
+      STATUS = "Approved",
+      ID_APPROVER = "APV_01",
+      COMMENTS_APPROVER = shinipsum::random_text(nwords = 10)
+    )
   expect_identical(
-    GetInputs(
-      app2,
-      c("approval_ui-comment", "approval_ui-request_approve",
-        "approval_ui-request_reject")
-    ),
-    c("", "1", "0")
+    as.list(dt[names(dt) %in% names(exp_list)]),
+    exp_list
   )
   
   # Try to reject a post that already has been approved
   app2$set_inputs(`approval_ui-comment` = shinipsum::random_text(nwords = 10))
   app2$click("approval_ui-request_reject", timeout_ = 30 * 1000)
-  dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
   # A post that already has been approved cannot be rejected
-  expect_identical(dt$STATUS, "Approved")
+  dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
+  expect_identical(
+    as.list(dt[names(dt) %in% names(exp_list)]),
+    exp_list
+  )
   
   # Reset status to "In progress" so we can test the rejection process
   googlesheets4::range_write(

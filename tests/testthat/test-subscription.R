@@ -132,20 +132,24 @@ test_that("App subscription process checkup...", {
   
   # Subscription process
   app$set_inputs(`more_ui-more_accordion` = c("TRUE", "Subscribe"))
-  app$set_inputs(`more_ui-name_subs` = charlatan::ch_name())
+  name_subs <- charlatan::ch_name()
+  app$set_inputs(`more_ui-name_subs` = name_subs)
   app$set_inputs(`more_ui-email_subs` = testing_email)
-  # expect_identical(app$get_value(input = "more_ui-email_subs"), testing_email)
   app$set_inputs(`more_ui-ml_subs` = c("jobs", "services", "upcycle", "mix"))
   app$click("more_ui-subscribeBtn", timeout_ = 10 * 1000)
-  # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
-  # Incompatibility with custom JS function
+  dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
+  # Check if fields are properly populated
   expect_identical(
-    GetInputs(
-      app,
-      c("more_ui-name_subs", "more_ui-email_subs",
-        "more_ui-ml_subs", "more_ui-subscribeBtn")
-    ),
-    c("", "", "jobs", "services", "upcycle", "mix", "1")
+    as.list(dt[!names(dt) %in% c("FIRST_ACTIVITY", "LAST_ACTIVITY")]),
+    list(
+      ID_MEMBER = "ID_00000001",
+      NAME = name_subs,
+      EMAIL = paste0("<",testing_email,">"),
+      ACTIVE_JOBS = TRUE,
+      ACTIVE_SERVICES = TRUE,
+      ACTIVE_UPCYCLE = TRUE,
+      ACTIVE_MIX = TRUE
+    )
   )
   
   # Unsubscription process
@@ -153,14 +157,19 @@ test_that("App subscription process checkup...", {
   app$set_inputs(`more_ui-email_unsubs` = testing_email)
   app$set_inputs(`more_ui-ml_unsubs` = c("jobs", "services", "upcycle", "mix"))
   app$click("more_ui-unsubscribeBtn", timeout_ = 10 * 1000)
-  # 'more_ui-ml_subs' field does not get restarted - shinytest2 issue!
-  # Incompatibility with custom JS function
+  dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
+  # Check if fields are properly populated
   expect_identical(
-    GetInputs(
-      app,
-      c("more_ui-email_unsubs", "more_ui-ml_unsubs", "more_ui-unsubscribeBtn")
-    ),
-    c("", "jobs", "services", "upcycle", "mix", "1")
+    as.list(dt[!names(dt) %in% c("FIRST_ACTIVITY", "LAST_ACTIVITY")]),
+    list(
+      ID_MEMBER = "ID_00000001",
+      NAME = name_subs,
+      EMAIL = paste0("<",testing_email,">"),
+      ACTIVE_JOBS = FALSE,
+      ACTIVE_SERVICES = FALSE,
+      ACTIVE_UPCYCLE = FALSE,
+      ACTIVE_MIX = FALSE
+    )
   )
 })
 
