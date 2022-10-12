@@ -48,11 +48,10 @@ po/*~
 # RStudio Connect folder
 rsconnect/
 
-# Secrets files and credentials
-inst/.secrets/tokens
-inst/app/json/shareibc.json
-
 # shinytest2 snapshots when there are differences
 _.new.png
 # {shinytest2}: Ignore new debug snapshots for `$expect_values()`
 *_.new.png
+
+# Ignore golem development folder
+dev

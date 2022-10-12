@@ -5,9 +5,9 @@
 
 <!-- badges: start -->
 
-[![R-CMD-check](https://github.com/alexquant1993/socialministryapp/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/alexquant1993/socialministryapp/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/alexquant1993/shareIBC/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/alexquant1993/shareIBC/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
-coverage](https://codecov.io/gh/alexquant1993/socialministryapp/branch/master/graph/badge.svg)](https://app.codecov.io/gh/alexquant1993/socialministryapp?branch=master)
+coverage](https://codecov.io/gh/alexquant1993/shareIBC/branch/master/graph/badge.svg)](https://app.codecov.io/gh/alexquant1993/shareIBC?branch=master)
 <!-- badges: end -->
 
 The “Share IBC” app was created with the purpose of creating a common
