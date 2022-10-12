@@ -33,4 +33,5 @@ ApiConnections <- function(env = c("default", "production")){
     # Assign token to .auth internal object from gmailr package
     assign("cred", token, .auth)
   }
+  return(NULL)
 }
