@@ -73,20 +73,13 @@ SubscribeEmail <- function(name, email, mailing_lists, session){
           # Add new entry to mailing list database
           sheet_append(ss = wb, data = new_entry)
         }
-        # Compose subscription confirmation email
-        SubscriptionHTML(mailing_lists)
         # Send confirmation email
         message <- 
           gm_mime() %>% 
           gm_to(paste(name, email)) %>% 
           gm_from(get_gmail_account()) %>% 
           gm_subject("Subscription confirmation") %>% 
-          gm_html_body(
-            paste(
-              readLines(app_sys("app/messages/page_subs.html")),
-              collapse = ""
-            )
-          )
+          gm_html_body(SubscriptionHTML(mailing_lists))
         gm_send_message(message)
       } else {
         # Not successfull operation
@@ -146,9 +139,7 @@ SubscriptionHTML <- function(mailing_lists){
           width = 200, height = 50)
       )
     )
-  fileConn <- file(app_sys("app/messages/page_subs.html"))
-  writeLines(as.character(doc_subs), fileConn)
-  close(fileConn)
+  return(as.character(doc_subs))
 }
 
 #' Checks the validity of an email input
@@ -226,19 +217,14 @@ UnsubscribeEmail <- function(email, mailing_lists, session){
           col_names = FALSE
         )
         # Compose unsubscription email
-        UnsubscriptionHTML(mailing_lists)
+        
         # Send unsubscription confirmation email
         message <- 
           gm_mime() %>% 
           gm_to(email) %>% 
           gm_from(get_gmail_account()) %>% 
           gm_subject("Unsubscription confirmation") %>% 
-          gm_html_body(
-            paste(
-              readLines(app_sys("app/messages/page_unsubs.html")),
-              collapse = ""
-            )
-          )
+          gm_html_body(UnsubscriptionHTML(mailing_lists))
         gm_send_message(message)
       } else {
         # The email is not in the database
@@ -298,7 +284,5 @@ UnsubscriptionHTML <- function(mailing_lists){
           width = 200, height = 50)
       )
     )
-  fileConn <- file(app_sys("app/messages/page_unsubs.html"))
-  writeLines(as.character(doc_unsubs), fileConn)
-  close(fileConn)
+  return(as.character(doc_unsubs))
 }

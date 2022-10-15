@@ -108,18 +108,6 @@ UploadPost <- function(name_poster,
         # Send approval email
         # Compose email tailored to each approver
         for (j in 1:length(dt_approvers$EMAIL)) {
-          print("Creating HTML approval request...")
-          PostApprovalHTML(
-            id_post,
-            name_poster,
-            email_poster,
-            type_post,
-            subject,
-            description,
-            contact_email,
-            contact_phone,
-            id_approver = dt_approvers$ID_APPROVER[j]
-          )
           # Compose mail
           message <- 
             gm_mime() %>% 
@@ -127,9 +115,16 @@ UploadPost <- function(name_poster,
             gm_from(get_gmail_account()) %>% 
             gm_subject("A New Request Requires Your Approval!") %>% 
             gm_html_body(
-              paste(
-                readLines(app_sys("app/messages/request_post.html")),
-                collapse = ""
+              PostApprovalHTML(
+                id_post,
+                name_poster,
+                email_poster,
+                type_post,
+                subject,
+                description,
+                contact_email,
+                contact_phone,
+                id_approver = dt_approvers$ID_APPROVER[j]
               )
             )
           # Attach files, if any
@@ -347,8 +342,5 @@ PostApprovalHTML <- function(id_post,
         )
       )
     )
-  fileConn <- file(app_sys("app/messages/request_post.html"))
-  writeLines(as.character(html_post), fileConn)
-  close(fileConn)
+  return(as.character(html_post))
 }
-

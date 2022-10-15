@@ -22,25 +22,18 @@ ApprovePost <- function(id_request, id_approver, comment, session){
       
       if (dt_post$STATUS == "In progress") {
         # Send confirmation mail to the poster
-        print("Creating HTML confirmation mail...")
-        ConfirmationPostHTML(id_request)
         print("Sending confirmation mail to posters...")
         message <- 
           gm_mime() %>% 
           gm_to(dt_post$EMAIL_POSTER) %>% 
           gm_from(get_gmail_account()) %>% 
-          gm_subject(paste("Post approval confirmation with ID code", id_request)) %>% 
-          gm_html_body(
-            paste(
-              readLines(app_sys("app/messages/confirmation_post.html")),
-              collapse = ""
-            )
-          )
+          gm_subject(
+            paste("Post approval confirmation with ID code", id_request)
+          ) %>% 
+          gm_html_body(ConfirmationPostHTML(id_request))
         gm_send_message(message)
         
         # Send post to the current mailing list
-        print("HTML creation of the approved post...")
-        ApprovedPostHTML(dt_post)
         print("Getting current mailing list...")
         wb_ml <- drive_get(get_golem_config("mailing_list_path"))
         dt_ml <- read_sheet(wb_ml, sheet = "DATABASE")
@@ -61,12 +54,7 @@ ApprovePost <- function(id_request, id_approver, comment, session){
             gm_bcc(mailing_list) %>% 
             gm_from(get_gmail_account()) %>% 
             gm_subject("Share IBC Update!") %>% 
-            gm_html_body(
-              paste(
-                readLines(app_sys("app/messages/approved_post.html")),
-                collapse = ""
-              )
-            )
+            gm_html_body(ApprovedPostHTML(dt_post))
           # Attach pictures, when they are available in the post
           files_id <- dt_post$FILES_URL
           if (!is.na(files_id)) {
@@ -136,11 +124,13 @@ gm_attach_url <- function(mime, description){
   
   base_name <- basename(description)
   
-  gm_attach_part(mime, body,
-                 content_type = type,
-                 name = base_name,
-                 filename = base_name,
-                 disposition = "attachment")
+  gm_attach_part(
+    mime, body,
+    content_type = type,
+    name = base_name,
+    filename = base_name,
+    disposition = "attachment"
+  )
 }
 
 
@@ -159,12 +149,12 @@ ConfirmationPostHTML <- function(id_request){
         p('Thank you so much for being part of the IBC community!'),
         hr(),
         p(strong("Social Ministry Team")),
-        tags$img(src = get_golem_config("ibc_logo_url"), width = 200, height = 50)
+        tags$img(
+          src = get_golem_config("ibc_logo_url"), width = 200, height = 50
+        )
       )
     )
-  fileConn <- file(app_sys("app/messages/confirmation_post.html"))
-  writeLines(as.character(html_post), fileConn)
-  close(fileConn)
+  return(as.character(html_post))
 }
 
 
@@ -307,9 +297,7 @@ ApprovedPostHTML <- function(dt_post){
         )
       )
     )
-  fileConn <- file(app_sys("app/messages/approved_post.html"))
-  writeLines(as.character(html_post), fileConn)
-  close(fileConn)
+  return(as.character(html_post))
 }
 
 
@@ -335,20 +323,13 @@ RejectPost <- function(id_request, id_approver, comment, session){
       
       if (dt_post$STATUS == "In progress") {
         # Send rejection mail to the poster
-        print("Creating HTML rejection mail...")
-        RejectionPostHTML(id_request, comment)
         print("Sending rejection mail to poster...")
         message <- 
           gm_mime() %>% 
           gm_to(dt_post$EMAIL_POSTER) %>% 
           gm_from(get_gmail_account()) %>% 
           gm_subject(paste("Post rejection notification with ID code", id_request)) %>% 
-          gm_html_body(
-            paste(
-              readLines(app_sys("app/messages/rejected_post.html")),
-              collapse = ""
-            )
-          )
+          gm_html_body(RejectionPostHTML(id_request, comment))
         gm_send_message(message)
         
         # Update post status to rejected
@@ -359,7 +340,8 @@ RejectPost <- function(id_request, id_approver, comment, session){
         range <- paste0(col,row)
         range_write(
           wb,
-          data = data.frame("Rejected", id_approver, comment, Sys.time(), "Closed"),
+          data = 
+            data.frame("Rejected", id_approver, comment, Sys.time(), "Closed"),
           sheet = "DATABASE",
           range = range,
           col_names = FALSE
@@ -410,7 +392,5 @@ RejectionPostHTML <- function(id_request, comment){
           width = 200, height = 50)
       )
     )
-  fileConn <- file(app_sys("app/messages/rejected_post.html"))
-  writeLines(as.character(html_post), fileConn)
-  close(fileConn)
+  return(as.character(html_post))
 }
