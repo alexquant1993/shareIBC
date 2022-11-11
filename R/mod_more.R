@@ -22,6 +22,11 @@ mod_more_ui <- function(id){
           "The objective of Share IBC is to help members of IBC and those
             within our community to get connected and share different
             opportunities.",
+          tags$p(
+            tags$strong(
+              "If you do not receive our mails in your inbox, please check your
+              spam folder and mark our emails as 'Not Spam'.")
+          ),
           tags$p("*Mandatory fields", style = "color:red;"),
           f7Text(
             inputId = ns("name_subs"),
@@ -84,7 +89,7 @@ mod_more_ui <- function(id){
         f7Block(
           tags$p(
             "Please contact us by sending an email to",
-            tags$a(href = "", "socialministry@ibcmadrid.com.")
+            tags$a(href = "", paste0(get_golem_config("gmail_account"), "."))
           ),
           tags$p(
             "For more information, please visit the",

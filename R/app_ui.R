@@ -19,6 +19,8 @@ app_ui <- function(request) {
         filled = TRUE,
         pullToRefresh = TRUE
       ),
+      # PWA compatibility
+      PWAMask(),
       # Waiting background before the UI is ready to be shown
       waiter::waiterPreloader(
         html = waiter::spin_1(),
@@ -48,8 +50,8 @@ app_ui <- function(request) {
         ),
         f7Tabs(
           id =  "main_tabset",
-          swipeable = TRUE,
-          animated = FALSE,
+          swipeable = FALSE,
+          animated = TRUE,
           mod_share_ui("share_ui"),
           mod_request_ui("request_ui"),
           mod_about_ui("about_ui"),

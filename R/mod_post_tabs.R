@@ -146,10 +146,13 @@ mod_post_tabs_server <- function(id){
             ),
             tags$li(
               strong("Request removal of your post:"),
-              "Request removal of your post to 'socialministry@ibcmadrid.com'
-               once object(s) have been collected or once you have received
-               what you are looking for. Posts older that 4 months will be
-               deleted at the administration's judgement."
+              paste0(
+                "Request removal of your post to '",
+                get_golem_config("gmail_account"),
+                "' once object(s) have been collected or once you have received 
+                what you are looking for. Posts older that 4 months will be 
+                deleted at the administration's judgement."
+              )
             )
           ),
           tags$p("*Mandatory fields", style = "color:red;")

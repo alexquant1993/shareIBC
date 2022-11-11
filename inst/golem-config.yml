@@ -14,6 +14,6 @@ production:
   app_prod: yes
   posts_path: posts/production/DT_POSTS
   mailing_list_path: mailing_list/DT_MAILING_LIST
-  app_url: www.shareibcmadrid.com
+  app_url: https://shareibcmadrid.com/
 dev:
   golem_wd: !expr here::here()

@@ -1,7 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# shareIBC
+<div align="center">
+
+<img src="./inst/app/www/shareibc_hex.png" height = "200px"/>
 
 <!-- badges: start -->
 
@@ -9,6 +11,10 @@
 [![Codecov test
 coverage](https://codecov.io/gh/alexquant1993/shareIBC/branch/master/graph/badge.svg)](https://app.codecov.io/gh/alexquant1993/shareIBC?branch=master)
 <!-- badges: end -->
+
+[Website](https://shareibcmadrid.com/)
+
+</div>
 
 The “Share IBC” app was created with the purpose of creating a common
 space for the IBC church community that will allow its members to

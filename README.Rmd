@@ -8,17 +8,21 @@ output: github_document
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.path = "man/figures/README-",
+  fig.path = "inst/app/www/",
   out.width = "100%"
 )
 ```
 
-# shareIBC
+<div align="center">
+<img src="./inst/app/www/shareibc_hex.png" height = "200px"/>
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/alexquant1993/shareIBC/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/alexquant1993/shareIBC/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/alexquant1993/shareIBC/branch/master/graph/badge.svg)](https://app.codecov.io/gh/alexquant1993/shareIBC?branch=master)
 <!-- badges: end -->
+
+[Website](https://shareibcmadrid.com/)
+</div>
 
 The "Share IBC" app was created with the purpose of creating a common space for the IBC church community that will allow its members to exchange job opportunities, offer their professional services and upcycle and donate different goods instead of throwing them away. It also includes all the relevant information on the Social Ministry, from the philosophy and purpose of the ministry to the services and activities it provides.
 
