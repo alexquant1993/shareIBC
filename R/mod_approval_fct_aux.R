@@ -151,6 +151,17 @@ ConfirmationPostHTML <- function(id_request){
         p(strong("Social Ministry Team")),
         tags$img(
           src = get_golem_config("ibc_logo_url"), width = 200, height = 50
+        ),
+        rep_br(2),
+        tags$em(
+          strong(
+            "Request removal of your post:"
+          ),
+          paste0(
+            "Request removal of your post to '", get_golem_config("gmail_account"),
+            "' once it is no longer valid. Please include details to identify
+            it, such as the POST ID."
+          )
         )
       )
     )

@@ -1,6 +1,6 @@
 Package: shareIBC
 Title: Share IBC
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: 
     person("Anderson", "Arroyo", , "a.arroyo@pucp.pe", role = c("cre", "aut"))
 Description: Application of the Social Ministry at IBC Madrid created to

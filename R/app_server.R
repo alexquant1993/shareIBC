@@ -6,12 +6,15 @@
 #' @import shinyMobile
 #' @noRd
 app_server <- function( input, output, session ) {
+  # Limit input files to 10 MB
+  options(shiny.maxRequestSize = 10*1024^2)
+  
   # Load server modules
   mod_post_server("post_ui")
   mod_share_server("share_ui")
   mod_request_server("request_ui")
   mod_about_server("about_ui")
-  mod_more_server("more_ui")
+  # mod_more_server("more_ui")
   mod_approval_server("approval_ui")
   
   # Show search and post buttons just in the share tab

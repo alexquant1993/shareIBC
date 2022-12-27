@@ -17,9 +17,11 @@ f7Post <- function(subject,
       shiny::tags$div(class = "card-date", date)
     )
   
+  # Replace multiple line breaks with a single one
+  content <- gsub("[\r\n]+", "\n", content)
   # Post content UI
   contentTag <-
-    shiny::tags$div(class = "card-content card-content-padding", content)
+    shiny::tags$div(class = "card-content card-content-padding preline", content)
   
   # Post footer UI
   footerTag <- if (!is.null(footer)) 

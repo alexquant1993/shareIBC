@@ -196,21 +196,3 @@ formCheckBoxGroup <- function (inputId, label, choices = NULL, selected = NULL) 
     )
   )
 }
-
-#' Mask function around shiny.pwa::pwa main function
-#' It executes the pwa function only if we are in a production environment
-#' @noRd
-PWAMask <- function(){
-  if (Sys.getenv("R_CONFIG_ACTIVE") == "production") {
-    shiny.pwa::pwa(
-      domain = get_golem_config("app_url", config = "production"),
-      title = "Share IBC",
-      output = "www",
-      icon = "www/icons/icon-512.png",
-      color = "#D14D42",
-      offline_template = "www/offline.html"
-    )
-  } else {
-    NULL
-  }
-}

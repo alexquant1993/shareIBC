@@ -79,6 +79,27 @@ mod_about_ui <- function(id){
           ns("sm_guide"),
           "SM Guidelines"
         )
+      ),
+      f7AccordionItem(
+        title = "Contact us",
+        f7Block(
+          tags$p(
+            "Please contact us by sending an email to",
+            tags$a(href = "", paste0(get_golem_config("gmail_account"), "."))
+          ),
+          tags$p(
+            "For more information, please visit the",
+            tags$a(
+              href = get_golem_config("ibc_url"), class = "link external",
+              "official church's website."
+            )
+          )
+        )
+      ),
+      f7AccordionItem(
+        title = "About this app",
+        app_sys('app/about_html/howto.html') %>%
+          includeHTML() %>% f7Block()
       )
     )
   )

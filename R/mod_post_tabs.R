@@ -58,7 +58,7 @@ mod_post_tabs_ui <- function(id, label, icon){
           inputId = ns("attach_post"),
           label = 
             div(strong("Attach files, if any"),
-                helpPopup('Only image files are allowed.')
+                helpPopup('Only image files are allowed. 10MB max size.')
             ),
           multiple = TRUE,
           accept = "image/*"
@@ -110,76 +110,78 @@ mod_post_tabs_server <- function(id){
     # Post instructions reactive UI
     output$post_instr <- renderUI({
       if (id == "jobs") {
-        f7Block(
-          strong(f7BlockHeader("Share a job opportunity")),
-          "Share a job opportunity with your IBC community!
-          Maybe you have heard about a new vacant position in your company,
-          maybe you have seen an ad walking down the street or on social
-          networks, or maybe you want to offer a temporary job for a few hours,
-          whatever the situation, post it here.",
-          tags$p("*Mandatory fields", style = "color:red;")
-        )
+        instr <-
+          tagList(
+            strong(f7BlockHeader("Share a job opportunity")),
+            "Share a job opportunity with your IBC community!
+            Maybe you have heard about a new vacant position in your company,
+            maybe you have seen an ad walking down the street or on social
+            networks, or maybe you want to offer a temporary job for a few hours,
+            whatever the situation, post it here."
+          )
       } else if (id == "services") {
-        f7Block(
-          strong(f7BlockHeader("Offer your professional services")),
-          "Are you a music or French teacher, do you have construction or
-          cleaning skills, or maybe you're an excellent dog walker?
-          Whatever your expertise, share it here!",
-          tags$p("*Mandatory fields", style = "color:red;")
-        )
+        instr <-
+          tagList(
+            strong(f7BlockHeader("Offer your professional services")),
+            "Are you a music or French teacher, do you have construction or
+            cleaning skills, or maybe you're an excellent dog walker?
+            Whatever your expertise, share it here!",
+          )
       } else if (id == "upcycle") {
-        f7Block(
-          strong(f7BlockHeader("Upcycle and donate")),
-          "Upcycle and donate something rather than throw it away.
-          Whether it's a chair, some jam jars, or an old door,
-          feel free to post it. Or maybe you're looking to acquire
-          something yourself. Please follow the rules below:",
-          tags$ul(
-            tags$li(
-              strong("Free items ONLY!:"),
-              "Only post items that are free or for trade. No cash exchanges."
-            ),
-            tags$li(
-              strong("Location identification:"),
-              "Indicate point of pick-up and conditions (time, day, etc)
+        instr <-
+          tagList(
+            strong(f7BlockHeader("Upcycle and donate")),
+            "Upcycle and donate something rather than throw it away.
+            Whether it's a chair, some jam jars, or an old door,
+            feel free to post it. Or maybe you're looking to acquire
+            something yourself. Please follow the rules below:",
+            tags$ul(
+              tags$li(
+                strong("Free items ONLY!:"),
+                "Only post items that are free or for trade. No cash exchanges."
+              ),
+              tags$li(
+                strong("Location identification:"),
+                "Indicate point of pick-up and conditions (time, day, etc)
                clearly in your post."
-            ),
-            tags$li(
-              strong("Request removal of your post:"),
-              paste0(
-                "Request removal of your post to '",
-                get_golem_config("gmail_account"),
-                "' once object(s) have been collected or once you have received 
-                what you are looking for. Posts older that 4 months will be 
-                deleted at the administration's judgement."
               )
             )
-          ),
-          tags$p("*Mandatory fields", style = "color:red;")
-        )
+          )
       } else if (id == "mix"){
-        f7Block(
-          strong(f7BlockHeader("Miscellaneous")),
-          "You can put anything here that doesn't fall into the categories
+        instr <-
+          tagList(
+            strong(f7BlockHeader("Miscellaneous")),
+            "You can put anything here that doesn't fall into the categories
           above, here are some examples:",
-          tags$ul(
-            tags$li(
-              "Are you interested in joining a small group or connecting with
+            tags$ul(
+              tags$li(
+                "Are you interested in joining a small group or connecting with
               other Christians your age?"
-            ),
-            tags$li(
-              "Are you looking for a roommate or an apartment to rent?"
-            ),
-            tags$li(
-              "Are you looking for someone to play football or
+              ),
+              tags$li(
+                "Are you looking for a roommate or an apartment to rent?"
+              ),
+              tags$li(
+                "Are you looking for someone to play football or
               paddle on weekends?"
+              )
             )
-          ),
-          "Please do not use this service to pursue romantic interests, this is
-          not the purpuse of this app.",
-          tags$p("*Mandatory fields", style = "color:red;")
-        )
+          )
       }
+      # Instructions block
+      f7Block(
+        instr,
+        br(),
+        strong("Request removal of your post:"),
+        paste0(
+          "Request removal of your post to '",
+          get_golem_config("gmail_account"),
+          "' once it is no longer valid. Please include details to identify it.
+          Posts older than 4 months will be removed at the discretion of the 
+          administration."
+        ),
+        tags$p("*Mandatory fields", style = "color:red;")
+      )
     })
     
     # Toggle data protection pop up
@@ -226,6 +228,7 @@ mod_post_tabs_server <- function(id){
         # hideF7Preloader()
       })
       
+      browser()
       # Upload data and send pre-approval email
       check_upload <- 
         UploadPost(

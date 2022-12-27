@@ -127,16 +127,18 @@ if (secret_can_decrypt("shareIBC")) {
 
 test_that("App subscription process checkup...", {
   skip_if_no_token()
-  # Open more tabset
-  app$set_inputs(main_tabset = "More")
+  # Open subscription popup
+  app$set_inputs(main_tabset = "Share")
+  app$click("post_ui-bttn_subs")
+  app$set_inputs(`post_ui-popup_subs` = TRUE)
   
   # Subscription process
-  app$set_inputs(`more_ui-more_accordion` = c("TRUE", "Subscribe"))
+  app$set_inputs(`post_ui-subscription-subs_accordion` = c("TRUE", "Subscribe"))
   name_subs <- charlatan::ch_name()
-  app$set_inputs(`more_ui-name_subs` = name_subs)
-  app$set_inputs(`more_ui-email_subs` = testing_email)
-  app$set_inputs(`more_ui-ml_subs` = c("jobs", "services", "upcycle", "mix"))
-  app$click("more_ui-subscribeBtn", timeout_ = 10 * 1000)
+  app$set_inputs(`post_ui-subscription-name_subs` = name_subs)
+  app$set_inputs(`post_ui-subscription-email_subs` = testing_email)
+  app$set_inputs(`post_ui-subscription-ml_subs` = c("jobs", "services", "upcycle", "mix"))
+  app$click("post_ui-subscription-subscribeBtn", timeout_ = 10 * 1000)
   dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
   # Check if fields are properly populated
   expect_identical(
@@ -153,10 +155,12 @@ test_that("App subscription process checkup...", {
   )
   
   # Unsubscription process
-  app$set_inputs(`more_ui-more_accordion` = c("TRUE", "Unsubscribe"))
-  app$set_inputs(`more_ui-email_unsubs` = testing_email)
-  app$set_inputs(`more_ui-ml_unsubs` = c("jobs", "services", "upcycle", "mix"))
-  app$click("more_ui-unsubscribeBtn", timeout_ = 10 * 1000)
+  app$set_inputs(`post_ui-subscription-subs_accordion` = c("TRUE", "Unsubscribe"))
+  app$set_inputs(`post_ui-subscription-email_unsubs` = testing_email)
+  app$set_inputs(
+    `post_ui-subscription-ml_unsubs` = c("jobs", "services", "upcycle", "mix")
+  )
+  app$click("post_ui-subscription-unsubscribeBtn", timeout_ = 10 * 1000)
   dt <- googlesheets4::read_sheet(wb, sheet = "DATABASE")
   # Check if fields are properly populated
   expect_identical(

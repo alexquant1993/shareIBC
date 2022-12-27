@@ -14,6 +14,10 @@
 }
 
 /*Post cards UI*/
+.preline{
+  white-space: pre-line;
+}
+
 .card-footer{
   display: block;
 }

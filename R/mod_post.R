@@ -12,8 +12,15 @@ mod_post_ui <- function(id){
   tagList(
     actionButton(
       inputId = ns("bttn_post"),
-      label = f7Icon("pencil"),
-      class = "button button-fill button-small"
+      label = span(f7Icon("plus_app_fill"), "Post"),
+      class = "button button-fill button-small",
+      style = "width: 45%;"
+    ),
+    actionButton(
+      inputId = ns("bttn_subs"),
+      label = span(f7Icon("bell_fill"), "Subscribe"),
+      class = "button button-fill button-small",
+      style = "width: 55%;"
     ),
     f7Popup(
       id = ns("popup_post"),
@@ -54,6 +61,11 @@ mod_post_ui <- function(id){
           )
         )
       )
+    ),
+    f7Popup(
+      id = ns("popup_subs"),
+      title = "Subscription settings",
+      mod_subscription_ui(ns("subscription"))
     )
   )
 }
@@ -74,6 +86,14 @@ mod_post_server <- function(id){
     mod_post_tabs_server("services")
     mod_post_tabs_server("upcycle")
     mod_post_tabs_server("mix")
+    
+    # Toggle subscribe pop up
+    observeEvent(input$bttn_subs, {
+      updateF7Popup(id = "popup_subs")
+    })
+    
+    # Subscription server logic
+    mod_subscription_server("subscription")
     
   })
 }
