@@ -196,3 +196,127 @@ formCheckBoxGroup <- function (inputId, label, choices = NULL, selected = NULL) 
     )
   )
 }
+
+
+
+#' Custom f7Page function, in order to always allow PWA dependencies
+#' and prevent the mandatory installation popup. Code extracted from shinyMobile
+#' package, 0.9.1 release.
+#'
+#' @noRd
+f7Page2 <- function(
+    ...,
+    title = NULL,
+    preloader = FALSE,
+    loading_duration = 3,
+    # default options
+    options = list(
+      theme = c("ios", "md", "auto", "aurora"),
+      dark = TRUE,
+      filled = FALSE,
+      color = "#007aff",
+      touch = list(
+        tapHold = TRUE,
+        tapHoldDelay = 750,
+        iosTouchRipple = FALSE
+      ),
+      iosTranslucentBars = FALSE,
+      navbar = list(
+        iosCenterTitle = TRUE,
+        hideOnPageScroll = TRUE
+      ),
+      toolbar = list(
+        hideOnPageScroll = FALSE
+      ),
+      pullToRefresh = FALSE
+    )
+) {
+  
+  # fallback to auto
+  if (length(options$theme) > 1) options$theme <- "auto"
+  
+  if (!is.null(options$theme) && !is.null(options$filled) && !is.null(options$color)) {
+    if (options$theme == "dark" && options$filled == TRUE &&
+        (options$color == "white" || options$color == "#fff")) {
+      stop("Wrong theme combination: navbar color cannot be white in a dark theme!")
+    }
+  }
+  
+  if (!is.null(options$pullToRefresh)) {
+    dataPTR <- tolower(options$pullToRefresh)
+    options$pullToRefresh <- NULL
+  } else {
+    dataPTR <- NULL
+  }
+  
+  # configuration tag to be passed to JS
+  configTag <- shiny::tags$script(
+    type = "application/json",
+    `data-for` = "app",
+    jsonlite::toJSON(
+      x = options,
+      auto_unbox = TRUE,
+      json_verbatim = TRUE
+    )
+  )
+  
+  bodyTag <- shiny::tags$body(
+    `data-pwa` = "false",
+    `data-ptr`= dataPTR,
+    # preloader
+    onLoad = if (preloader) {
+      duration <- loading_duration * 1000
+      paste0(
+        "$(function() {
+          // Preloader
+          app.dialog.preloader();
+          setTimeout(function () {
+           app.dialog.close();
+           }, ", duration, ");
+        });
+        "
+      )
+    },
+    shiny::tags$div(
+      id = "app",
+      ...
+    ),
+    configTag
+  )
+  
+  shiny::tagList(
+    # Head
+    shiny::tags$head(
+      tags$script(
+        "if ('serviceWorker' in navigator) {
+          var pathname = window.location.pathname;
+          navigator.serviceWorker
+            .register(pathname + 'service-worker.js', { scope: pathname})
+            .then(function() { console.log('Service Worker Registered'); });
+        };"
+      ),
+      shiny::tags$meta(charset = "utf-8"),
+      shiny::tags$meta(
+        name = "viewport",
+        content = "
+          width=device-width,
+          initial-scale=1,
+          maximum-scale=1,
+          minimum-scale=1,
+          user-scalable=no,
+          viewport-fit=cover"
+      ),
+      shiny::tags$title(title)
+    ),
+    # Body
+    add_dependencies(
+      deps = c(
+        "framework7",
+        "shinyMobile",
+        "pwa",
+        "pwacompat"
+      ),
+      bodyTag
+    )
+  )
+}

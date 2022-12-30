@@ -10,9 +10,8 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic 
-    f7Page(
+    f7Page2(
       title = "Share IBC",
-      allowPWA = TRUE,
       options = list(
         theme = "auto",
         dark = FALSE,
