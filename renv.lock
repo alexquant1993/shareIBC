@@ -1303,19 +1303,6 @@
         "xtable"
       ]
     },
-    "shiny.pwa": {
-      "Package": "shiny.pwa",
-      "Version": "0.2.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "035f7f130a16f030668a94b2b8ac53ce",
-      "Requirements": [
-        "htmltools",
-        "readr",
-        "shiny",
-        "urltools"
-      ]
-    },
     "shinyMobile": {
       "Package": "shinyMobile",
       "Version": "0.9.1",

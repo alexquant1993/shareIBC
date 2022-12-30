@@ -20,12 +20,12 @@ Imports:
     googlesheets4,
     htmltools,
     httr,
+    jsonlite,
     rlang (>= 0.4.11),
     shinipsum,
     shiny (>= 1.5.0),
     shinyjs,
     shinyMobile,
-    shiny.pwa,
     sodium,
     utils,
     waiter
